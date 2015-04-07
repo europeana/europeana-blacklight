@@ -23,6 +23,7 @@ And then execute:
 1. Get a Europeana API key from http://labs.europeana.eu/api/
 2. Set the API key using: `Europeana::API.api_key = 'your_api_key'`
 3. Configure Blacklight to use the Europeana adapter:
+    
     ```ruby
     configure_blacklight do |config|
       config.repository_class = Europeana::Blacklight::ApiRepository
