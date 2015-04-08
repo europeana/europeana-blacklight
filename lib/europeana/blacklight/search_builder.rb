@@ -129,9 +129,7 @@ module Europeana
         rows(api_parameters[:rows] || 10) if rows.nil?
         api_parameters[:rows] = rows
 
-        if start != 0
-          api_parameters[:start] = start
-        end
+        api_parameters[:start] = start unless start == 0
       end
 
       ##

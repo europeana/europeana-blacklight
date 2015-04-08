@@ -30,7 +30,7 @@ module Europeana
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
-          blacklight_config: blacklight_config
+                       blacklight_config: blacklight_config
         )
       end
 
