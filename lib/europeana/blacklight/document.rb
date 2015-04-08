@@ -1,3 +1,6 @@
+require 'blacklight'
+require 'active_model'
+
 module Europeana
   module Blacklight
     ##
