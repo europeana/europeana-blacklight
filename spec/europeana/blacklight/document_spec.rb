@@ -7,7 +7,7 @@ RSpec.describe Europeana::Blacklight::Document do
     I18n.available_locales = [:en, :fr, :es]
   end
 
-  let(:edm) {
+  let(:edm) do
     {
       id: '/abc/123',
       type: 'IMAGE',
@@ -38,7 +38,7 @@ RSpec.describe Europeana::Blacklight::Document do
       ],
       europeanaCompleteness: 5
     }
-  }
+  end
 
   describe '#provider_id' do
     it 'returns first part of ID' do
@@ -83,9 +83,16 @@ RSpec.describe Europeana::Blacklight::Document do
       end
 
       context 'with values arg' do
-        subject { described_class.new(edm).has?('proxies.about', '/proxy/provider/abc/123') }
-        it 'is not implemented' do
-          expect { subject }.to raise_error(NotImplementedError)
+        subject { described_class.new(edm).has?(key, value) }
+        context 'when value is present' do
+          let(:key) { 'proxies.about' }
+          let(:value) { '/proxy/provider/abc/123' }
+          it { is_expected.to eq(true) }
+        end
+        context 'when value is not present' do
+          let(:key) { 'proxies.about' }
+          let(:value) { '/proxy/provider/abc/456' }
+          it { is_expected.to eq(false) }
         end
       end
     end
@@ -103,21 +110,21 @@ RSpec.describe Europeana::Blacklight::Document do
     it 'handles unnested keys' do
       expect(subject.get('type', sep: nil)).to eq('IMAGE')
     end
-    
+
     it 'handles 2-level keys' do
       expect(subject.get('proxies.about')).to eq('/proxy/provider/abc/123')
     end
-    
+
     it 'handles 3-level keys' do
       expect(subject.get('aggregations.webResources.dctermsCreated', sep: nil)).to eq([1900])
     end
-    
+
     context 'when value is singular' do
       it 'is returned untouched' do
         expect(subject.get('europeanaCompleteness')).to eq(5)
       end
     end
-    
+
     context 'when value is array' do
       context 'with separator arg' do
         it 'concats elements' do
@@ -130,7 +137,7 @@ RSpec.describe Europeana::Blacklight::Document do
         end
       end
     end
-    
+
     context 'when value is hash' do
       context 'with key for current locale' do
         before do

@@ -35,11 +35,31 @@ module Europeana
         keys = split_edm_key(k)
         return super unless keys.size > 1
 
-        if values.present?
-          fail NotImplementedError, "#{self.class}#has? with nested EDM key does not check for values"
-        end
+        edm = get(k, default: nil)
 
-        !get(k, default: nil).nil?
+        if edm.nil?
+          false
+        elsif values.nil?
+          true
+        else
+          object_has_value?(edm, values)
+        end
+      end
+
+      def object_has_value?(obj, val)
+        if obj.is_a?(Array)
+          if val.is_a?(Array)
+            (val - obj).size == 0
+          else
+            obj.include?(val)
+          end
+        else
+          if val.is_a?(Array)
+            val.include?(obj)
+          else
+            val == obj
+          end
+        end
       end
 
       def get(key, opts = { sep: ', ', default: nil })
@@ -52,12 +72,10 @@ module Europeana
         end
 
         val = get_localized_edm_value(target)
-        
+
         if val.is_a?(Array)
           val = val.compact.flatten
-          if opts[:sep]
-            return val.join(opts[:sep])
-          end
+          return val.join(opts[:sep]) if opts[:sep]
         end
 
         val
@@ -99,7 +117,7 @@ module Europeana
           child = []
           parent.compact.each do |v|
             if v[child_key].is_a?(Array)
-              child = child + v[child_key]
+              child += v[child_key]
             elsif v.key?(child_key)
               child << v[child_key]
             end
