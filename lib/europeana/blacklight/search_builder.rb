@@ -59,7 +59,7 @@ module Europeana
       #
       # @see http://labs.europeana.eu/api/query/
       def add_query_to_api(api_parameters)
-        if blacklight_params[:q].blank?
+        if [blacklight_params[:q]].flatten.reject(&:blank?).blank?
           api_parameters[:query] = '*:*'
         elsif search_field && search_field.field.present?
           api_parameters[:query] = "#{search_field.field}:#{blacklight_params[:q]}"
