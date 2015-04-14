@@ -16,15 +16,11 @@ module Europeana
       end
 
       def provider_id
-        @provider_id ||= id.to_s.split('/')[1]
+        @provider_id ||= self['id'].to_s.split('/')[1]
       end
 
       def record_id
-        @record_id ||= id.to_s.split('/')[2]
-      end
-
-      def id
-        self[self.class.unique_key]
+        @record_id ||= self['id'].to_s.split('/')[2]
       end
 
       def as_json(options = nil)
@@ -35,50 +31,24 @@ module Europeana
         keys = split_edm_key(k)
         return super unless keys.size > 1
 
-        edm = get(k, default: nil)
+        edm = fetch(k)
 
         if edm.nil?
           false
         elsif values.nil?
           true
         else
-          object_has_value?(edm, values)
+          edm_field_has_value?(edm, values)
         end
       end
 
-      def object_has_value?(obj, val)
-        if obj.is_a?(Array)
-          if val.is_a?(Array)
-            (val - obj).size == 0
-          else
-            obj.include?(val)
-          end
-        else
-          if val.is_a?(Array)
-            val.include?(obj)
-          else
-            val == obj
-          end
-        end
+      def [](key)
+        val = get_localized_edm_value(edm_target(key))
+        val.is_a?(Array) ? val.compact.flatten : val
       end
 
-      def get(key, opts = { sep: ', ', default: nil })
-        keys = split_edm_key(key)
-        return opts[:default] unless key?(keys.first)
-
-        target = self
-        keys.each do |k|
-          target = get_edm_child(target, k) unless target.nil?
-        end
-
-        val = get_localized_edm_value(target)
-
-        if val.is_a?(Array)
-          val = val.compact.flatten
-          return val.join(opts[:sep]) if opts[:sep]
-        end
-
-        val
+      def key?(key)
+        !edm_target(key).nil?
       end
 
       # BL expects document to respond to MLT method
@@ -89,6 +59,31 @@ module Europeana
       end
 
       protected
+
+      def edm_field_has_value?(field, val)
+        if field.is_a?(Array)
+          if val.is_a?(Array)
+            (val - field).size == 0
+          else
+            field.include?(val)
+          end
+        else
+          if val.is_a?(Array)
+            val.include?(field)
+          else
+            val == field
+          end
+        end
+      end
+
+      def edm_target(key)
+        target = _source
+        split_edm_key(key).each do |k|
+          target = get_edm_child(target, k)
+          return nil if target.nil?
+        end
+        target
+      end
 
       def split_edm_key(key)
         key.to_s.split('.')
@@ -122,7 +117,7 @@ module Europeana
               child << v[child_key]
             end
           end
-          child
+          child.empty? ? nil : child
         elsif parent.respond_to?(:'[]')
           parent[child_key]
         end
