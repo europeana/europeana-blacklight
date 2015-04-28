@@ -94,7 +94,7 @@ module Europeana
           val.collect do |v|
             get_localized_edm_value(v)
           end
-        elsif val.is_a?(Hash)
+        elsif val.is_a?(Hash) && hash_is_lang_map?(val)
           if val.key?(I18n.locale)
             val[I18n.locale]
           elsif val.key?(:def)
@@ -105,6 +105,11 @@ module Europeana
         else
           val
         end
+      end
+
+      def hash_is_lang_map?(hash)
+        return false unless hash.keys.collect { |k| k.to_s.length }.max <= 3
+        hash.values.reject { |v| v.is_a?(Array) }.size == 0
       end
 
       def get_edm_child(parent, child_key)

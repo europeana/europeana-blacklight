@@ -32,6 +32,9 @@ RSpec.describe Europeana::Blacklight::Document do
           webResources: [
             {
               dctermsCreated: 1900
+            },
+            {
+              dctermsCreated: 1950
             }
           ]
         }
@@ -121,7 +124,7 @@ RSpec.describe Europeana::Blacklight::Document do
     end
 
     it 'handles 3-level keys' do
-      expect(subject['aggregations.webResources.dctermsCreated']).to eq([1900])
+      expect(subject['aggregations.webResources.dctermsCreated']).to eq([1900, 1950])
     end
 
     context 'when value is singular' do
@@ -138,28 +141,42 @@ RSpec.describe Europeana::Blacklight::Document do
     end
 
     context 'when value is hash' do
-      context 'with key for current locale' do
-        before do
-          I18n.locale = :en
+      context 'when hash is lang map' do
+        context 'with key for current locale' do
+          before do
+            I18n.locale = :en
+          end
+          it 'returns current locale value' do
+            expect(subject['proxies.dcType']).to eq(['Picture'])
+          end
         end
-        it 'returns current locale value' do
-          expect(subject['proxies.dcType']).to eq(['Picture'])
+        context 'with key "def"' do
+          before do
+            I18n.locale = :fr
+          end
+          it 'returns def value' do
+            expect(subject['proxies.dcType']).to eq(['Image'])
+          end
+        end
+        context 'without current locale or "def" keys' do
+          before do
+            I18n.locale = :es
+          end
+          it 'returns array of all values' do
+            expect(subject['proxies.dcDescription']).to eq(['object desc'])
+          end
         end
       end
-      context 'with key "def"' do
-        before do
-          I18n.locale = :fr
+
+      context 'when hash is not lang map' do
+        it 'returns all objects' do
+          expect(subject['aggregations.webResources'].size).to eq(2)
         end
-        it 'returns def value' do
-          expect(subject['proxies.dcType']).to eq(['Image'])
+        it 'returns full objects' do
+          expect(subject['aggregations.webResources'].first).to be_a(Hash)
         end
-      end
-      context 'without current locale or "def" keys' do
-        before do
-          I18n.locale = :es
-        end
-        it 'returns array of all values' do
-          expect(subject['proxies.dcDescription']).to eq(['object desc'])
+        it 'preserves object fields' do
+          expect(subject['aggregations.webResources'].first).to have_key(:dctermsCreated)
         end
       end
     end
