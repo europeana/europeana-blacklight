@@ -24,8 +24,13 @@ module Europeana
         field_config = @configuration.send(:"#{context}_fields")[field]
         value = options[:value] || begin
           [doc].flatten.collect do |target|
-            presenter = self.class.new(target, @controller, @configuration)
-            presenter.get_field_values(field, field_config, options)
+            case target
+            when NilClass
+              nil
+            else
+              presenter = self.class.new(target, @controller, @configuration)
+              presenter.get_field_values(field, field_config, options)
+            end
           end.compact.flatten
         end
 

@@ -45,6 +45,10 @@ module Europeana
         end
       end
 
+      def respond_to?(*args)
+        (args.size == 1 && _relations_has_key?(*args)) || super
+      end
+
       def respond_to_missing?(*args)
         (args.size == 1 && _relations_has_key?(*args)) || super
       end
