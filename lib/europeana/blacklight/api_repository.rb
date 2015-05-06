@@ -10,16 +10,17 @@ module Europeana
       ##
       # Finds a single Europeana record via the API, with hierarchy data
       #
-      # @param id [String] record ID, with no leading slash
+      # @param id [String] record ID
       # @params params [Hash] request params to send to API
       # @return (see blacklight_config.document_model)
       def find(id, params = {})
-        cache_key = { "Europeana::API::Record/#{id}#object" => params }
+        id = "/#{id}" unless id[0] == '/'
+        cache_key = { "Europeana::API::Record#{id}#object" => params }
         res_object = Rails.cache.fetch(cache_key) do
-          Europeana::API.record("/#{id}", params)['object']
+          Europeana::API.record(id, params)['object']
         end
         doc = blacklight_config.document_model.new(res_object)
-        doc.hierarchy = fetch_document_hierarchy("/#{id}")
+        doc.hierarchy = fetch_document_hierarchy(id)
         doc
       end
 

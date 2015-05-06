@@ -8,8 +8,50 @@ module Europeana
     class Document
       include ::Blacklight::Document
 
+      attr_reader :_relations
       attr_writer :provider_id, :record_id
       attr_accessor :hierarchy
+
+      class << self
+        def lang_map?(obj)
+          return false unless obj.is_a?(Hash)
+          return false unless obj.keys.collect { |k| k.to_s.length }.max <= 3
+          obj.values.reject { |v| v.is_a?(Array) }.size == 0
+        end
+      end
+
+      def initialize(source_doc = {}, response = nil)
+        source_doc_fields = {}
+        @_relations = {}
+
+        source_doc.each_pair do |k, v|
+          if !v.is_a?(Enumerable) || v.none? { |val| val.is_a?(Enumerable) } || lang_map?(v)
+            source_doc_fields[k] = v
+          elsif v.is_a?(Hash)
+            @_relations[k] = self.class.new(v, nil)
+          else
+            @_relations[k] = v.collect { |val| self.class.new(val, nil) }
+          end
+        end
+
+        super(source_doc_fields, response)
+      end
+
+      def method_missing(m, *args, &b)
+        if _relations_has_key?(m.to_s)
+          _relations[m.to_s]
+        else
+          super
+        end
+      end
+
+      def respond_to_missing?(*args)
+        (args.size == 1 && _relations_has_key?(*args)) || super
+      end
+
+      def _relations_has_key?(key)
+        _relations.key?(key.to_s)
+      end
 
       def to_param
         "#{provider_id}/#{record_id}"
@@ -27,30 +69,6 @@ module Europeana
         super.merge('hierarchy' => @hierarchy.as_json(options))
       end
 
-      def has?(k, *values)
-        keys = split_edm_key(k)
-        return super unless keys.size > 1
-
-        edm = fetch(k)
-
-        if edm.nil?
-          false
-        elsif values.nil?
-          true
-        else
-          edm_field_has_value?(edm, values)
-        end
-      end
-
-      def [](key)
-        val = get_localized_edm_value(edm_target(key))
-        val.is_a?(Array) ? val.compact.flatten : val
-      end
-
-      def key?(key)
-        !edm_target(key).nil?
-      end
-
       # BL expects document to respond to MLT method
       # @todo Remove once BL expectation loosened, or; implement if Europeana
       #   API supports it
@@ -58,74 +76,8 @@ module Europeana
         []
       end
 
-      protected
-
-      def edm_field_has_value?(field, val)
-        if field.is_a?(Array)
-          if val.is_a?(Array)
-            (val - field).size == 0
-          else
-            field.include?(val)
-          end
-        else
-          if val.is_a?(Array)
-            val.include?(field)
-          else
-            val == field
-          end
-        end
-      end
-
-      def edm_target(key)
-        target = _source
-        split_edm_key(key).each do |k|
-          target = get_edm_child(target, k)
-          return nil if target.nil?
-        end
-        target
-      end
-
-      def split_edm_key(key)
-        key.to_s.split('.')
-      end
-
-      def get_localized_edm_value(val)
-        if val.is_a?(Array)
-          val.collect do |v|
-            get_localized_edm_value(v)
-          end
-        elsif val.is_a?(Hash) && hash_is_lang_map?(val)
-          if val.key?(I18n.locale)
-            val[I18n.locale]
-          elsif val.key?(:def)
-            val[:def]
-          else
-            val.values
-          end
-        else
-          val
-        end
-      end
-
-      def hash_is_lang_map?(hash)
-        return false unless hash.keys.collect { |k| k.to_s.length }.max <= 3
-        hash.values.reject { |v| v.is_a?(Array) }.size == 0
-      end
-
-      def get_edm_child(parent, child_key)
-        if parent.is_a?(Array)
-          child = []
-          parent.compact.each do |v|
-            if v[child_key].is_a?(Array)
-              child += v[child_key]
-            elsif v.key?(child_key)
-              child << v[child_key]
-            end
-          end
-          child.empty? ? nil : child
-        elsif parent.respond_to?(:'[]')
-          parent[child_key]
-        end
+      def lang_map?(obj)
+        self.class.lang_map?(obj)
       end
     end
   end
