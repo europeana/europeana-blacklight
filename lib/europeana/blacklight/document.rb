@@ -70,7 +70,11 @@ module Europeana
       end
 
       def as_json(options = nil)
-        super.merge('hierarchy' => @hierarchy.as_json(options))
+        super.merge('hierarchy' => @hierarchy.as_json(options)).tap do |json|
+          _relations.each do |k, v|
+            json[k] = v.as_json
+          end
+        end
       end
 
       # BL expects document to respond to MLT method
