@@ -74,6 +74,16 @@ module Europeana
 
         hierarchy
       end
+
+      def connection
+        fail NotImplementedError
+      end
+
+      protected
+
+      def connection_config
+        fail NotImplementedError
+      end
     end
   end
 end
