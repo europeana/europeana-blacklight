@@ -38,15 +38,12 @@ module Europeana
         params[:sort]
       end
 
-      def docs
-        @docs ||= begin
-          self['items'] || []
+      def documents
+        @documents ||= (self['items'] || []).collect do |doc|
+          document_model.new(doc, self)
         end
       end
-
-      def documents
-        docs.collect { |doc| document_model.new(doc, self) }
-      end
+      alias_method :docs, :documents
 
       def grouped
         []
