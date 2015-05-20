@@ -11,7 +11,7 @@ Add this line to your application's Gemfile:
 ```ruby
 gem 'europeana-blacklight',
   require: 'europeana/blacklight',
-  git: 'https://github.com/europeana/europeana-blacklight.git
+  git: 'https://github.com/europeana/europeana-blacklight.git'
 ```
 
 And then execute:
@@ -21,21 +21,26 @@ And then execute:
 ## Usage
 
 1. Get a Europeana API key from http://labs.europeana.eu/api/
-2. Set the API key:
+2. Set the API key in `config/blacklight.yml`:
     
-    ```ruby
-    Europeana::API.api_key = 'YOUR_API_KEY'
+    ```yml
+    production:
+      europeana_api_key: YOUR_API_KEY
     ```
     
-3. Configure Blacklight to use the Europeana adapter:
+3. Configure Blacklight to use the Europeana API adapter:
     
     ```ruby
-    configure_blacklight do |config|
-      config.repository_class = Europeana::Blacklight::ApiRepository
-      config.search_builder_class = Europeana::Blacklight::SearchBuilder
-      config.response_model = Europeana::Blacklight::Response
-      config.document_model = Europeana::Blacklight::Document
-      config.document_presenter_class = Europeana::Blacklight::DocumentPresenter
+    class CatalogController < ApplicationController
+      self.search_params_logic = Europeana::Blacklight::SearchBuilder.default_processor_chain
+
+      configure_blacklight do |config|
+        config.repository_class = Europeana::Blacklight::ApiRepository
+        config.search_builder_class = Europeana::Blacklight::SearchBuilder
+        config.response_model = Europeana::Blacklight::Response
+        config.document_model = Europeana::Blacklight::Document
+        config.document_presenter_class = Europeana::Blacklight::DocumentPresenter
+      end
     end
     ```
 

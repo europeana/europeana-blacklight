@@ -50,7 +50,7 @@ module Europeana
       #
       # @see http://labs.europeana.eu/api/authentication/#basic-authentication
       def add_wskey_to_api(api_parameters)
-        api_parameters[:wskey] = Rails.application.secrets.europeana_api_key
+        api_parameters[:wskey] = blacklight_config.connection_config[:europeana_api_key]
       end
 
       ##
@@ -111,8 +111,8 @@ module Europeana
       # @see http://labs.europeana.eu/api/search/#individual-facets
       # @see http://labs.europeana.eu/api/search/#offset-and-limit-of-facets
       def add_facetting_to_api(api_parameters)
-        api_request_facets = blacklight_config.facet_fields.select do |_field_name, facet|
-          !facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
+        api_request_facets = blacklight_config.facet_fields.select do |field_name, facet|
+          !facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)) && Europeana::API::Search::Fields.include?(field_name)
         end
 
         api_parameters[:facet] = api_request_facets.keys.join(',')
@@ -135,7 +135,9 @@ module Europeana
       ##
       # @todo Implement when the API supports sorting
       def add_sorting_to_api(_api_parameters)
-        fail NotImplementedError, 'Europeana REST API does not support sorting' unless sort.blank?
+        unless sort.blank?
+          Europeana::API.logger.warn('Europeana REST API does not support sorting')
+        end
       end
 
       ##

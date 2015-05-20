@@ -17,7 +17,7 @@ module Europeana
         id = "/#{id}" unless id[0] == '/'
         cache_key = { "Europeana::API::Record#{id}#object" => params }
         res_object = Rails.cache.fetch(cache_key) do
-          Europeana::API.record(id, params)['object']
+          connection.record(id, params)['object']
         end
         doc = blacklight_config.document_model.new(res_object)
         doc.hierarchy = fetch_document_hierarchy(id)
@@ -26,7 +26,7 @@ module Europeana
 
       def search(params = {})
         res = Rails.cache.fetch('Europeana::API::Search' => params) do
-          Europeana::API.search(params)
+          connection.search(params)
         end
 
         blacklight_config.response_model.new(
@@ -75,14 +75,8 @@ module Europeana
         hierarchy
       end
 
-      def connection
-        fail NotImplementedError
-      end
-
-      protected
-
-      def connection_config
-        fail NotImplementedError
+      def build_connection
+        Europeana::API
       end
     end
   end
