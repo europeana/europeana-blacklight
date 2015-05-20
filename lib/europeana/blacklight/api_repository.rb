@@ -17,7 +17,7 @@ module Europeana
         id = "/#{id}" unless id[0] == '/'
         cache_key = { "Europeana::API::Record#{id}#object" => params }
         res_object = Rails.cache.fetch(cache_key) do
-          connection.record(id, params)['object']
+          connection.record(id, params.merge(auth_params))['object']
         end
         doc = blacklight_config.document_model.new(res_object)
         doc.hierarchy = fetch_document_hierarchy(id)
@@ -65,7 +65,7 @@ module Europeana
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data
       def europeana_api_document_hierarchy(id)
-        record = Europeana::API::Record.new(id)
+        record = Europeana::API::Record.new(id, auth_params)
         hierarchy = record.hierarchy('ancestor-self-siblings')
 
         if hierarchy['self']['hasChildren']
@@ -77,6 +77,12 @@ module Europeana
 
       def build_connection
         Europeana::API
+      end
+
+      protected
+
+      def auth_params
+        { wskey: blacklight_config.connection_config[:europeana_api_key] }
       end
     end
   end
