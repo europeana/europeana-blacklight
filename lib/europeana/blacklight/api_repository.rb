@@ -17,7 +17,7 @@ module Europeana
         id = "/#{id}" unless id[0] == '/'
         cache_key = { "Europeana::API::Record#{id}#object" => params }
         res_object = Rails.cache.fetch(cache_key) do
-          connection.record(id, params.merge(auth_params))['object']
+          connection.record(id, auth_params(params))['object']
         end
         doc = blacklight_config.document_model.new(res_object)
         doc.hierarchy = fetch_document_hierarchy(id)
@@ -26,7 +26,7 @@ module Europeana
 
       def search(params = {})
         res = Rails.cache.fetch('Europeana::API::Search' => params) do
-          connection.search(params)
+          connection.search(auth_params(params))
         end
 
         blacklight_config.response_model.new(
@@ -81,8 +81,10 @@ module Europeana
 
       protected
 
-      def auth_params
-        { wskey: blacklight_config.connection_config[:europeana_api_key] }
+      def auth_params(params = {})
+        {
+          wskey: blacklight_config.connection_config[:europeana_api_key]
+        }.merge(params)
       end
     end
   end
