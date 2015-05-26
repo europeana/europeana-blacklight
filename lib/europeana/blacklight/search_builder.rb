@@ -9,7 +9,7 @@ module Europeana
       self.default_processor_chain = [
         :default_api_parameters, :add_profile_to_api,
         :add_wskey_to_api, :add_query_to_api, :add_qf_to_api,
-        :add_facet_qf_to_api, :add_facetting_to_api,
+        :add_facet_qf_to_api, :add_reusability_to_api, :add_facetting_to_api,
         :add_paging_to_api, :add_sorting_to_api
       ]
 
@@ -88,18 +88,24 @@ module Europeana
       #   {Blacklight::Solr::SearchBuilder#facet_value_to_fq_string} does
       def add_facet_qf_to_api(api_parameters)
         return unless blacklight_params[:f]
-        blacklight_params[:f].each_pair do |facet_field, value_list|
-          Array(value_list).each do |value|
-            next if value.blank? # skip empty strings
-            # bizarrely, reusability is a distinct API param, even though it
-            # is returned with the facets in a search response
-            if facet_field == 'REUSABILITY'
-              api_parameters[:reusability] = value
-            else
-              api_parameters[:qf] ||= []
-              api_parameters[:qf] << "#{facet_field}:\"#{value}\""
-            end
+
+        salient_facets = blacklight_params[:f].reject do |k, _v|
+          k == 'REUSABILITY'
+        end
+
+        salient_facets.each_pair do |facet_field, value_list|
+          Array(value_list).reject(&:blank?).each do |value|
+            api_parameters[:qf] ||= []
+            api_parameters[:qf] << "#{facet_field}:\"#{value}\""
           end
+        end
+      end
+
+      # bizarrely, reusability is a distinct API param, even though it
+      # is returned with the facets in a search response
+      def add_reusability_to_api(api_parameters)
+        if blacklight_params[:f] && blacklight_params[:f]['REUSABILITY']
+          api_parameters[:reusability] = blacklight_params[:f]['REUSABILITY'].join(',')
         end
       end
 
@@ -111,13 +117,9 @@ module Europeana
       # @see http://labs.europeana.eu/api/search/#individual-facets
       # @see http://labs.europeana.eu/api/search/#offset-and-limit-of-facets
       def add_facetting_to_api(api_parameters)
-        api_request_facets = blacklight_config.facet_fields.select do |field_name, facet|
-          !facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)) && Europeana::API::Search::Fields.include?(field_name)
-        end
+        api_parameters[:facet] = api_request_facet_fields.keys.join(',')
 
-        api_parameters[:facet] = api_request_facets.keys.join(',')
-
-        api_request_facets.each do |field_name, facet|
+        api_request_facet_fields.each do |field_name, facet|
           api_parameters[:"f.#{facet.field}.facet.limit"] = (facet_limit_for(field_name) + 1) if facet_limit_for(field_name)
         end
       end
@@ -135,9 +137,8 @@ module Europeana
       ##
       # @todo Implement when the API supports sorting
       def add_sorting_to_api(_api_parameters)
-        unless sort.blank?
-          Europeana::API.logger.warn('Europeana REST API does not support sorting')
-        end
+        return if sort.blank?
+        Europeana::API.logger.warn('Europeana REST API does not support sorting')
       end
 
       ##
@@ -163,6 +164,14 @@ module Europeana
           blacklight_config.default_facet_limit
         else
           facet.limit
+        end
+      end
+
+      def api_request_facet_fields
+        @api_request_facet_fields ||= blacklight_config.facet_fields.select do |field_name, facet|
+          !facet.query &&
+          (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)) &&
+          (field_name == 'REUSABILITY' || Europeana::API::Search::Fields.include?(field_name))
         end
       end
     end
