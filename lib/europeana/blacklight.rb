@@ -1,6 +1,8 @@
 require 'europeana/blacklight/version'
 
 module Europeana
+  ##
+  # Adapter to use the Europeana REST API as a {Blacklight} data source
   module Blacklight
     autoload :ApiRepository, 'europeana/blacklight/api_repository'
     autoload :Document, 'europeana/blacklight/document'

@@ -47,10 +47,7 @@ module Europeana
 
       def get_field_values(field, field_config, options = {})
         values = super
-        if Document.lang_map?(values)
-          values = localize_lang_map(values)
-        end
-        values
+        Document.lang_map?(values) ? localize_lang_map(values) : values
       end
 
       protected
