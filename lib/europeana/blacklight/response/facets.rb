@@ -49,6 +49,11 @@ module Europeana
             @options[:offset] || default_offset
           end
 
+          def sort
+            # Europeana API does not support facet sorting
+            nil
+          end
+
           private
 
           # @see http://labs.europeana.eu/api/search/#offset-and-limit-of-facets

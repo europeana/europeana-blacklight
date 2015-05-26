@@ -40,6 +40,7 @@ And then execute:
         config.response_model = Europeana::Blacklight::Response
         config.document_model = Europeana::Blacklight::Document
         config.document_presenter_class = Europeana::Blacklight::DocumentPresenter
+        config.facet_paginator_class = Europeana::Blacklight::FacetPaginator
       end
     end
     ```
