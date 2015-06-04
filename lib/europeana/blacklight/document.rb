@@ -6,6 +6,7 @@ module Europeana
     ##
     # A Europeana document
     class Document
+      include ActiveModel::Conversion
       include ::Blacklight::Document
 
       attr_reader :_relations
@@ -17,6 +18,12 @@ module Europeana
           return false unless obj.is_a?(Hash)
           return false unless obj.keys.collect { |k| k.to_s.length }.max <= 3
           obj.values.reject { |v| v.is_a?(Array) }.size == 0
+        end
+
+        def model_name
+          @_model_name ||= begin
+            ActiveModel::Name.new(self, nil, 'Document')
+          end
         end
       end
 
@@ -35,6 +42,10 @@ module Europeana
         end
 
         super(source_doc_fields, response)
+      end
+
+      def id
+        self['id']
       end
 
       def method_missing(m, *args, &b)
@@ -59,6 +70,18 @@ module Europeana
 
       def to_param
         "#{provider_id}/#{record_id}"
+      end
+
+      def persisted?
+        true
+      end
+
+      def private?(exhibit)
+        !public?(exhibit)
+      end
+
+      def public?(exhibit)
+        true
       end
 
       def provider_id
