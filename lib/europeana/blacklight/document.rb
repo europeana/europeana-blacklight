@@ -6,10 +6,14 @@ module Europeana
     ##
     # A Europeana document
     class Document
+      autoload :MoreLikeThis, 'europeana/blacklight/document/more_like_this'
+      autoload :Relations, 'europeana/blacklight/document/relations'
+
       include ActiveModel::Conversion
       include ::Blacklight::Document
+      include MoreLikeThis
+      include Relations
 
-      attr_reader :_relations
       attr_writer :provider_id, :record_id
       attr_accessor :hierarchy
 
@@ -20,6 +24,17 @@ module Europeana
           obj.values.reject { |v| v.is_a?(Array) }.size == 0
         end
 
+        def localize_lang_map(lang_map)
+          return lang_map unless lang_map?(lang_map)
+          if lang_map.key?(I18n.locale)
+            lang_map[I18n.locale]
+          elsif lang_map.key?(:def)
+            lang_map[:def]
+          else
+            lang_map.values
+          end
+        end
+
         def model_name
           @_model_name ||= begin
             ActiveModel::Name.new(self, nil, 'Document')
@@ -27,45 +42,38 @@ module Europeana
         end
       end
 
-      def initialize(source_doc = {}, response = nil)
-        source_doc_fields = {}
-        @_relations = {}
-
-        source_doc.each_pair do |k, v|
-          if !v.is_a?(Enumerable) || v.none? { |val| val.is_a?(Enumerable) } || lang_map?(v)
-            source_doc_fields[k] = v
-          elsif v.is_a?(Hash)
-            @_relations[k] = self.class.new(v, nil)
-          else
-            @_relations[k] = v.collect { |val| self.class.new(val, nil) }
-          end
-        end
-
-        super(source_doc_fields, response)
+      def initialize(source_doc = {}, response)
+        fields, @relations = extract_relations(source_doc)
+        super(fields, response)
       end
 
       def id
-        self['id']
+        self['id'] || self['about']
+      end
+
+      def fetch(key, *default)
+        value = if field_in_relation?(key)
+          fetch_through_relation(key, *default)
+        else
+          super
+        end
+        Document.localize_lang_map(value)
       end
 
       def method_missing(m, *args, &b)
-        if _relations_has_key?(m.to_s)
-          _relations[m.to_s]
+        if relations.key?(m.to_s)
+          relations[m.to_s]
         else
           super
         end
       end
 
       def respond_to?(*args)
-        (args.size == 1 && _relations_has_key?(*args)) || super
+        (args.size == 1 && relations.key?(*args)) || super
       end
 
       def respond_to_missing?(*args)
-        (args.size == 1 && _relations_has_key?(*args)) || super
-      end
-
-      def _relations_has_key?(key)
-        _relations.key?(key.to_s)
+        (args.size == 1 && relations.key?(*args)) || super
       end
 
       def to_param
@@ -94,21 +102,18 @@ module Europeana
 
       def as_json(options = nil)
         super.merge('hierarchy' => @hierarchy.as_json(options)).tap do |json|
-          _relations.each do |k, v|
+          relations.each do |k, v|
             json[k] = v.as_json
           end
         end
       end
 
-      # BL expects document to respond to MLT method
-      # @todo Remove once BL expectation loosened, or; implement if Europeana
-      #   API supports it
-      def more_like_this
-        []
-      end
-
       def lang_map?(obj)
         self.class.lang_map?(obj)
+      end
+
+      def localize_lang_map(lang_map)
+        self.class.localize_lang_map(lang_map)
       end
     end
   end

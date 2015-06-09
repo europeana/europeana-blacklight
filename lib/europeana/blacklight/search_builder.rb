@@ -18,6 +18,8 @@ module Europeana
       include FacetPagination
       include Ranges
 
+      delegate :to_query, to: :to_hash
+
       ##
       # Start with general defaults from BL config. Need to use custom
       # merge to dup values, to avoid later mutating the original by mistake.

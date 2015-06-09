@@ -12,20 +12,26 @@ module Europeana
       #
       # @param id [String] record ID
       # @params params [Hash] request params to send to API
-      # @return (see blacklight_config.document_model)
+      # @return (see blacklight_config.response_model)
       def find(id, params = {})
         id = "/#{id}" unless id[0] == '/'
-        cache_key = { "Europeana::API::Record#{id}#object" => params }
-        res_object = Rails.cache.fetch(cache_key) do
-          connection.record(id, auth_params(params))['object']
+        cache_key = "Europeana:API:Record:#{id}"
+        cache_key << ':' + params.to_query unless params.blank?
+        res = Rails.cache.fetch(cache_key) do
+          connection.record(id, auth_params(params))
         end
-        doc = blacklight_config.document_model.new(res_object)
-        doc.hierarchy = fetch_document_hierarchy(id)
-        doc
+
+        response = blacklight_config.response_model.new(
+          res, params, document_model: blacklight_config.document_model,
+                       blacklight_config: blacklight_config
+        )
+        response.documents.first.hierarchy = fetch_document_hierarchy(id)
+        response
       end
 
       def search(params = {})
-        res = Rails.cache.fetch('Europeana::API::Search' => params) do
+        cache_key = "Europeana:API:Search:" + params.to_query
+        res = Rails.cache.fetch(cache_key) do
           connection.search(auth_params(params))
         end
 
@@ -44,7 +50,7 @@ module Europeana
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data, or false if it has none
       def fetch_document_hierarchy(id)
-        Rails.cache.fetch("Europeana::API::Record/#{id}#hierarchy") do
+        Rails.cache.fetch("Europeana:API:Record:hierarchy:#{id}") do
           begin
             europeana_api_document_hierarchy(id)
           rescue Europeana::API::Errors::RequestError => error
