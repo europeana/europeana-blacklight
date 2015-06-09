@@ -5,65 +5,31 @@ module Europeana
     class DocumentPresenter < ::Blacklight::DocumentPresenter
       include ActionView::Helpers::AssetTagHelper
 
-      def field_in_relation?(field)
-        keys = split_edm_key(field)
-        (keys.size > 1) && @document._relations_has_key?(keys.first)
+      def render_document_show_field_value(field, options = {})
+        render_nested_field_value(field, :show, options)
       end
 
-      def render_relation_field_value(field, context, options = {})
-        doc = @document
+      def render_index_field_value(field, options = {})
+        render_nested_field_value(field, :index, options)
+      end
 
-        if field_in_relation?(field)
-          keys = split_edm_key(field)
-          field = keys.last
-          keys[0..-2].each do |relation_key|
-            doc = [doc].flatten.collect { |d| d._relations[relation_key] }
-          end
-        end
+      def render_nested_field_value(field, context, options = {})
+        key = @document.nested_field_key(field)
+        container = @document.nested_field_container(field)
 
-        field_config = @configuration.send(:"#{context}_fields")[field]
+        field_config = @configuration.send(:"#{context}_fields")[key]
         value = options[:value] || begin
-          [doc].flatten.collect do |target|
-            case target
-            when NilClass
-              nil
-            else
-              presenter = self.class.new(target, @controller, @configuration)
-              presenter.get_field_values(field, field_config, options)
-            end
+          [container].flatten.compact.collect do |target|
+            presenter = self.class.new(target, @controller, @configuration)
+            presenter.get_field_values(key, field_config, options)
           end.compact.flatten
         end
 
         render_field_value(value, field_config)
       end
 
-      def render_document_show_field_value(field, options = {})
-        render_relation_field_value(field, :show, options)
-      end
-
-      def render_index_field_value(field, options = {})
-        render_relation_field_value(field, :index, options)
-      end
-
       def get_field_values(field, field_config, options = {})
-        values = super
-        Document.lang_map?(values) ? localize_lang_map(values) : values
-      end
-
-      protected
-
-      def split_edm_key(key)
-        key.to_s.split('.')
-      end
-
-      def localize_lang_map(lang_map)
-        if lang_map.key?(I18n.locale)
-          lang_map[I18n.locale]
-        elsif lang_map.key?(:def)
-          lang_map[:def]
-        else
-          lang_map.values
-        end
+        Document.localize_lang_map(super)
       end
     end
   end
