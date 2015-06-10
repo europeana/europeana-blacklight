@@ -66,14 +66,16 @@ module Europeana
       # @see http://labs.europeana.eu/api/query/
       def add_query_to_api(api_parameters)
         if [blacklight_params[:q]].flatten.reject(&:blank?).blank?
-          api_parameters[:query] = '*:*'
+          query = '*:*'
         elsif search_field && search_field.field.present?
-          api_parameters[:query] = "#{search_field.field}:#{blacklight_params[:q]}"
+          query = "#{search_field.field}:#{blacklight_params[:q]}"
         elsif blacklight_params[:q].is_a?(Hash)
           # @todo when would it be a Hash?
+          query = nil
         elsif blacklight_params[:q]
-          api_parameters[:query] = blacklight_params[:q]
+          query = blacklight_params[:q]
         end
+        append_to_query_param(api_parameters, query)
       end
 
       ##
@@ -179,6 +181,14 @@ module Europeana
           (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)) &&
           (field_name == 'REUSABILITY' || Europeana::API::Search::Fields.include?(field_name))
         end
+      end
+
+      def append_to_query_param(api_parameters, query)
+        return if query.blank?
+        return if query == '*:*' && api_parameters[:query].present?
+        api_parameters[:query] ||= ''
+        api_parameters[:query] << ' ' unless api_parameters[:query].blank?
+        api_parameters[:query] << query
       end
     end
   end
