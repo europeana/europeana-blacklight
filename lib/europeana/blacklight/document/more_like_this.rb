@@ -16,8 +16,6 @@ module Europeana
           repository.search(mlt_params).documents
         end
 
-        protected
-
         # @param [Europeana::Blacklight::Document] doc
         # @return [String]
         def more_like_this_query
