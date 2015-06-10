@@ -5,6 +5,7 @@ module Europeana
     class SearchBuilder < ::Blacklight::SearchBuilder
       require 'europeana/blacklight/search_builder/channels'
       require 'europeana/blacklight/search_builder/facet_pagination'
+      require 'europeana/blacklight/search_builder/more_like_this'
       require 'europeana/blacklight/search_builder/ranges'
 
       self.default_processor_chain = [
@@ -16,6 +17,7 @@ module Europeana
 
       include Channels
       include FacetPagination
+      include MoreLikeThis
       include Ranges
 
       delegate :to_query, to: :to_hash

@@ -9,10 +9,11 @@ module Europeana
         #
         # @return [Array<Europeana::Blacklight::Document>]
         def more_like_this
-          mlt_params = { query: more_like_this_query, rows: 4, profile: 'rich' }
+          mlt_params = { query: '*:*', qf: [more_like_this_query], rows: 4, profile: 'rich' }
           blacklight_config = @response.blacklight_config
           repository = blacklight_config.repository_class.new(blacklight_config)
-          repository.search(mlt_params).documents
+          mlt_response = repository.search(mlt_params)
+          [mlt_response, mlt_response.documents]
         end
 
         # @return [String]
