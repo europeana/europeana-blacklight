@@ -8,7 +8,7 @@ module Europeana
     # @see Europeana::API
     class ApiRepository < ::Blacklight::AbstractRepository
       ##
-      # Finds a single Europeana record via the API, with hierarchy data
+      # Finds a single Europeana record via the API
       #
       # @param id [String] record ID
       # @params params [Hash] request params to send to API
@@ -21,12 +21,10 @@ module Europeana
           connection.record(id, auth_params(params))
         end
 
-        response = blacklight_config.response_model.new(
+        blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
                        blacklight_config: blacklight_config
         )
-        response.documents.first.hierarchy = fetch_document_hierarchy(id)
-        response
       end
 
       def search(params = {})
