@@ -47,9 +47,10 @@ module Europeana
         end
 
         def more_like_this_field_queries(param = nil)
-          more_like_this_logic.select do |component|
+          logic = more_like_this_logic.select do |component|
             param.nil? || component[:param] == param
-          end.map do |component|
+          end
+          logic.map do |component|
             field_terms = more_like_this_field_terms(component[:fields])
             more_like_this_param_query(component[:param], field_terms, component[:boost])
           end.compact
