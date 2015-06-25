@@ -79,6 +79,16 @@ module Europeana
         hierarchy
       end
 
+      ##
+      # Queries the API for items similar to a given document
+      def more_like_this(doc, field = nil, params = {})
+        query = doc.more_like_this_query(field)
+        return [nil, []] if query.nil?
+        mlt_params = { query: query, rows: 4, profile: 'rich' }.merge(params)
+        mlt_response = search(mlt_params)
+        [mlt_response, mlt_response.documents]
+      end
+
       def build_connection
         Europeana::API
       end

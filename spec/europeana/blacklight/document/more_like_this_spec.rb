@@ -4,14 +4,6 @@ RSpec.describe Europeana::Blacklight::Document::MoreLikeThis do
   subject { Europeana::Blacklight::Document.new(source) }
   let(:source) { {} }
 
-  describe '#more_like_this' do
-    context 'without blacklight_config' do
-      it 'returns empty objects' do
-        expect(subject.more_like_this).to eq([nil, []])
-      end
-    end
-  end
-
   describe '#more_like_this_query' do
     context 'without param arg' do
       context 'when doc has no MLT fields' do

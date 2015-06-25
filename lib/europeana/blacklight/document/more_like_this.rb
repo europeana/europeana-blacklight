@@ -4,22 +4,6 @@ module Europeana
       ##
       # Methods for obtaining "more like this" documents
       module MoreLikeThis
-        ##
-        # Queries the API for items similar to a given document
-        #
-        # @return [Array<Europeana::Blacklight::Document>]
-        def more_like_this(param = nil)
-          query = more_like_this_query(param)
-          if !@response.respond_to?(:blacklight_config) || query.nil?
-            return [nil, []]
-          end
-          mlt_params = { query: query, rows: 4, profile: 'rich' }
-          blacklight_config = @response.blacklight_config
-          repository = blacklight_config.repository_class.new(blacklight_config)
-          mlt_response = repository.search(mlt_params)
-          [mlt_response, mlt_response.documents]
-        end
-
         # @param [String] param Name of API parameter to restrict query to
         # @return [String]
         def more_like_this_query(param = nil)
