@@ -6,3 +6,5 @@ javascript:
   enabled: false
 scss:
   enabled: false
+ruby:
+  config_file: .ruby-style.yml
