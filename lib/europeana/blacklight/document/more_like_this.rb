@@ -9,18 +9,23 @@ module Europeana
         #
         # @return [Array<Europeana::Blacklight::Document>]
         def more_like_this
-          return [nil, []] unless @response.respond_to?(:blacklight_config)
-          mlt_params = { query: [more_like_this_query], rows: 4, profile: 'rich' }
+          query = more_like_this_query
+          if !@response.respond_to?(:blacklight_config) || !query.nil?
+            return [nil, []]
+          end
+          mlt_params = { query: query, rows: 4, profile: 'rich' }
           blacklight_config = @response.blacklight_config
           repository = blacklight_config.repository_class.new(blacklight_config)
           mlt_response = repository.search(mlt_params)
           [mlt_response, mlt_response.documents]
         end
 
+        # @param [String] param Name of API parameter to restrict query to
         # @return [String]
-        # @todo react in the absence of any field queries
-        def more_like_this_query
-          field_queries = more_like_this_field_queries.join(' OR ')
+        def more_like_this_query(param = nil)
+          queries = more_like_this_field_queries(param)
+          return nil unless queries.size > 0
+          field_queries = queries.join(' OR ')
           "(#{field_queries}) NOT europeana_id:\"#{self.id}\""
         end
 
@@ -41,8 +46,11 @@ module Europeana
           end.flatten
         end
 
-        def more_like_this_field_queries
-          more_like_this_logic.map do |component|
+        def more_like_this_field_queries(param = nil)
+          logic = more_like_this_logic.select do |component|
+            param.nil? || component[:param] == param
+          end
+          logic.map do |component|
             field_terms = more_like_this_field_terms(component[:fields])
             more_like_this_param_query(component[:param], field_terms, component[:boost])
           end.compact
