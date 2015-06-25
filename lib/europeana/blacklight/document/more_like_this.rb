@@ -8,8 +8,8 @@ module Europeana
         # Queries the API for items similar to a given document
         #
         # @return [Array<Europeana::Blacklight::Document>]
-        def more_like_this
-          query = more_like_this_query
+        def more_like_this(param = nil)
+          query = more_like_this_query(param)
           if !@response.respond_to?(:blacklight_config) || query.nil?
             return [nil, []]
           end
