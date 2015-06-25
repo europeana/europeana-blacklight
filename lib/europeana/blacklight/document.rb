@@ -95,7 +95,9 @@ module Europeana
       end
 
       def as_json(options = nil)
-        super.merge('hierarchy' => @hierarchy.as_json(options)).tap do |json|
+        json = super
+        json.merge!('hierarchy' => @hierarchy.as_json(options)) unless @hierarchy.nil?
+        json.tap do |json|
           relations.each do |k, v|
             json[k] = v.as_json
           end
