@@ -20,7 +20,6 @@ module Europeana
       class << self
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          return false unless obj.keys.collect { |k| k.to_s.length }.max <= 3
           obj.values.reject { |v| v.is_a?(Array) }.size == 0
         end
 
@@ -95,9 +94,13 @@ module Europeana
       end
 
       def as_json(options = nil)
-        super.merge('hierarchy' => @hierarchy.as_json(options)).tap do |json|
+        json = super
+        unless @hierarchy.nil?
+          json.merge!('hierarchy' => @hierarchy.as_json(options))
+        end
+        json.tap do |j|
           relations.each do |k, v|
-            json[k] = v.as_json
+            j[k] = v.as_json
           end
         end
       end
