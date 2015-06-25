@@ -10,7 +10,7 @@ module Europeana
         # @return [Array<Europeana::Blacklight::Document>]
         def more_like_this
           query = more_like_this_query
-          if !@response.respond_to?(:blacklight_config) || !query.nil?
+          if !@response.respond_to?(:blacklight_config) || query.nil?
             return [nil, []]
           end
           mlt_params = { query: query, rows: 4, profile: 'rich' }
