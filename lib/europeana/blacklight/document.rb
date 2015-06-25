@@ -42,7 +42,7 @@ module Europeana
         end
       end
 
-      def initialize(source_doc = {}, response)
+      def initialize(source_doc = {}, response = nil)
         fields, @relations = extract_relations(source_doc)
         super(fields, response)
       end
@@ -52,20 +52,14 @@ module Europeana
       end
 
       def fetch(key, *default)
-        value = if field_in_relation?(key)
+        value = if has_relation?(key)
+          relations[key]
+        elsif field_in_relation?(key)
           fetch_through_relation(key, *default)
         else
           super
         end
         Document.localize_lang_map(value)
-      end
-
-      def method_missing(m, *args, &b)
-        if relations.key?(m.to_s)
-          relations[m.to_s]
-        else
-          super
-        end
       end
 
       def respond_to?(*args)

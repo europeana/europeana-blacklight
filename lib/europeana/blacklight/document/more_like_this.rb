@@ -9,6 +9,7 @@ module Europeana
         #
         # @return [Array<Europeana::Blacklight::Document>]
         def more_like_this
+          return [nil, []] unless @response.respond_to?(:blacklight_config)
           mlt_params = { query: [more_like_this_query], rows: 4, profile: 'rich' }
           blacklight_config = @response.blacklight_config
           repository = blacklight_config.repository_class.new(blacklight_config)
@@ -17,6 +18,7 @@ module Europeana
         end
 
         # @return [String]
+        # @todo react in the absence of any field queries
         def more_like_this_query
           field_queries = more_like_this_field_queries.join(' OR ')
           "(#{field_queries}) NOT europeana_id:\"#{self.id}\""

@@ -54,6 +54,14 @@ module Europeana
           container
         end
 
+        def method_missing(m, *args, &b)
+          has_relation?(m) ? relations[m.to_s] : super
+        end
+
+        def has_relation?(name)
+          relations.key?(name.to_s)
+        end
+
         protected
 
         def split_edm_key(key)
