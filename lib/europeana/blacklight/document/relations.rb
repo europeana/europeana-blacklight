@@ -30,9 +30,10 @@ module Europeana
               if source_doc[k].is_a?(Hash)
                 relations[k] = self.class.new(source_doc[k], nil)
               elsif source_doc[k].is_a?(Array)
-                relations[k] = source_doc[k].collect { |val| self.class.new(val, nil) }
+                relations[k] = source_doc[k].map { |v| self.class.new(v, nil) }
               else
-                fail StandardError 'Relations should be a collection of objects.'
+                fail StandardError,
+                  'Relations should be a collection of objects.'
               end
             else
               relations[k] = []
