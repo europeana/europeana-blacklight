@@ -17,16 +17,20 @@ module Europeana
         end
 
         def extract_relations(source_doc)
-          fields = {}
+          fields = source_doc.except(relation_keys)
+
           relations = HashWithIndifferentAccess.new
 
-          source_doc.each_pair do |k, v|
-            if !v.is_a?(Enumerable) || v.none? { |val| val.is_a?(Enumerable) } || lang_map?(v)
-              fields[k] = v
-            elsif v.is_a?(Hash)
-              relations[k] = self.class.new(v, nil)
-            else
-              relations[k] = v.collect { |val| self.class.new(val, nil) }
+          relation_keys.each do |k|
+            if source_doc.key?(k)
+              if source_doc[k].is_a?(Hash)
+                relations[k] = self.class.new(source_doc[k], nil)
+              elsif source_doc[k].is_a?(Array)
+                relations[k] = source_doc[k].map { |v| self.class.new(v, nil) }
+              else
+                fail StandardError,
+                     'Relations should be a collection of objects.'
+              end
             end
           end
 
@@ -55,7 +59,13 @@ module Europeana
         end
 
         def method_missing(m, *args, &b)
-          has_relation?(m) ? relations[m.to_s] : super
+          if has_relation?(m)
+            relations[m.to_s]
+          elsif relation_keys.include?(m)
+            []
+          else
+            super
+          end
         end
 
         def has_relation?(name)
@@ -67,6 +77,11 @@ module Europeana
         def split_edm_key(key)
           key.to_s.split('.')
         end
+
+        def relation_keys
+          [:agents, :aggregations, :concepts, :europeanaAggregation, :places,
+           :providedCHOs, :proxies, :timespans, :webResources]
+         end
       end
     end
   end
