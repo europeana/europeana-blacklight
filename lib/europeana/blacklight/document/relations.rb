@@ -33,7 +33,7 @@ module Europeana
                 relations[k] = source_doc[k].map { |v| self.class.new(v, nil) }
               else
                 fail StandardError,
-                  'Relations should be a collection of objects.'
+                     'Relations should be a collection of objects.'
               end
             else
               relations[k] = []
