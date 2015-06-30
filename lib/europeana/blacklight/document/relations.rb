@@ -17,10 +17,6 @@ module Europeana
         end
 
         def extract_relations(source_doc)
-          relation_keys = [:agents, :aggregations, :concepts,
-                           :europeanaAggregation, :places, :providedCHOs,
-                           :proxies, :timespans]
-
           fields = source_doc.except(relation_keys)
 
           relations = HashWithIndifferentAccess.new
@@ -35,8 +31,6 @@ module Europeana
                 fail StandardError,
                      'Relations should be a collection of objects.'
               end
-            else
-              relations[k] = []
             end
           end
 
@@ -65,7 +59,13 @@ module Europeana
         end
 
         def method_missing(m, *args, &b)
-          has_relation?(m) ? relations[m.to_s] : super
+          if has_relation?(m)
+            relations[m.to_s]
+          elsif relation_keys.include?(m)
+            []
+          else
+            super
+          end
         end
 
         def has_relation?(name)
@@ -77,6 +77,11 @@ module Europeana
         def split_edm_key(key)
           key.to_s.split('.')
         end
+
+        def relation_keys
+          [:agents, :aggregations, :concepts, :europeanaAggregation, :places,
+           :providedCHOs, :proxies, :timespans, :webResources]
+         end
       end
     end
   end
