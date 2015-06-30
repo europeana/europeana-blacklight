@@ -17,16 +17,25 @@ module Europeana
         end
 
         def extract_relations(source_doc)
-          fields = {}
+          relation_keys = [:agents, :aggregations, :concepts,
+                           :europeanaAggregation, :places, :providedCHOs,
+                           :proxies, :timespans]
+
+          fields = source_doc.except(relation_keys)
+
           relations = HashWithIndifferentAccess.new
 
-          source_doc.each_pair do |k, v|
-            if !v.is_a?(Enumerable) || v.none? { |val| val.is_a?(Enumerable) } || lang_map?(v)
-              fields[k] = v
-            elsif v.is_a?(Hash)
-              relations[k] = self.class.new(v, nil)
+          relation_keys.each do |k|
+            if source_doc.key?(k)
+              if source_doc[k].is_a?(Hash)
+                relations[k] = self.class.new(source_doc[k], nil)
+              elsif source_doc[k].is_a?(Array)
+                relations[k] = source_doc[k].collect { |val| self.class.new(val, nil) }
+              else
+                fail StandardError 'Relations should be a collection of objects.'
+              end
             else
-              relations[k] = v.collect { |val| self.class.new(val, nil) }
+              relations[k] = []
             end
           end
 
