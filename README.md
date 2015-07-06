@@ -46,3 +46,14 @@ And then execute:
       end
     end
     ```
+
+4. Caching (optional)
+
+   To enable caching of API responses:
+
+   ```ruby
+   configure_blacklight do |config|
+     config.europeana_api_cache = Rails.cache # or any {ActiveSupport::Cache} instance
+     config.europeana_api_cache_expires_in = 60.minutes # defaults to 24.hours
+   end
+   ```
