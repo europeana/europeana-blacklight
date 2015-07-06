@@ -113,7 +113,7 @@ module Europeana
         end
       end
 
-      def cached(key, &block)
+      def cached(key)
         cache.fetch(key, expires_in: cache_expires_in) do
           yield
         end
