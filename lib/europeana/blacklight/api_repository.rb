@@ -17,7 +17,7 @@ module Europeana
         id = "/#{id}" unless id[0] == '/'
         cache_key = "Europeana:API:Record:#{id}"
         cache_key << ':' + params.to_query unless params.blank?
-        res = Rails.cache.fetch(cache_key) do
+        res = cached(cache_key) do
           connection.record(id, auth_params(params))
         end
 
@@ -29,7 +29,7 @@ module Europeana
 
       def search(params = {})
         cache_key = "Europeana:API:Search:" + params.to_query
-        res = Rails.cache.fetch(cache_key) do
+        res = cached(cache_key) do
           connection.search(auth_params(params))
         end
 
@@ -48,7 +48,7 @@ module Europeana
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data, or false if it has none
       def fetch_document_hierarchy(id)
-        Rails.cache.fetch("Europeana:API:Record:hierarchy:#{id}") do
+        cached("Europeana:API:Record:hierarchy:#{id}") do
           begin
             europeana_api_document_hierarchy(id)
           rescue Europeana::API::Errors::RequestError => error
@@ -99,6 +99,24 @@ module Europeana
         {
           wskey: blacklight_config.connection_config[:europeana_api_key]
         }.merge(params)
+      end
+
+      def cache
+        @cache ||= begin
+          blacklight_config.europeana_api_cache || ActiveSupport::Cache::NullStore.new
+        end
+      end
+
+      def cache_expires_in
+        @expires_in ||= begin
+          blacklight_config.europeana_api_cache_expires_in || 24.hours
+        end
+      end
+
+      def cached(key)
+        cache.fetch(key, expires_in: cache_expires_in) do
+          yield
+        end
       end
     end
   end
