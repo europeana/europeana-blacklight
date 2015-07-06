@@ -14,7 +14,7 @@ module Europeana
           return unless blacklight_params[:mlt]
           repository = blacklight_config.repository_class.new(blacklight_config)
           doc_response = repository.find(blacklight_params[:mlt])
-          query = doc_response.documents.first.more_like_this_query
+          query = doc_response.documents.first.more_like_this_query(blacklight_params[:mltf])
           append_to_query_param(api_parameters, query)
         end
       end
