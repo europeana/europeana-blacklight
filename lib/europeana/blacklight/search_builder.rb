@@ -10,9 +10,9 @@ module Europeana
 
       self.default_processor_chain = [
         :default_api_parameters, :add_profile_to_api,
-        :add_wskey_to_api, :add_query_to_api, :add_qf_to_api,
-        :add_facet_qf_to_api, :add_reusability_to_api, :add_facetting_to_api,
-        :add_paging_to_api, :add_sorting_to_api
+        :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api,
+        :add_reusability_to_api, :add_facetting_to_api, :add_paging_to_api,
+        :add_sorting_to_api
       ]
 
       include Channels
@@ -49,14 +49,6 @@ module Europeana
         else
           api_parameters[:profile] = 'params rich'
         end
-      end
-
-      ##
-      # Add the Europeana REST API key
-      #
-      # @see http://labs.europeana.eu/api/authentication/#basic-authentication
-      def add_wskey_to_api(api_parameters)
-        api_parameters[:wskey] = blacklight_config.connection_config[:europeana_api_key]
       end
 
       ##
