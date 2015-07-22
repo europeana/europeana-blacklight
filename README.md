@@ -1,6 +1,6 @@
 # Europeana::Blacklight
 
-[![Build Status](https://travis-ci.org/europeana/europeana-blacklight.svg)](https://travis-ci.org/europeana/europeana-blacklight) [![Coverage Status](https://coveralls.io/repos/europeana/europeana-blacklight/badge.svg)](https://coveralls.io/r/europeana/europeana-blacklight)
+[![Build Status](https://travis-ci.org/europeana/europeana-blacklight.svg?branch=master)](https://travis-ci.org/europeana/europeana-blacklight) [![Coverage Status](https://coveralls.io/repos/europeana/europeana-blacklight/badge.svg?branch=master&service=github)](https://coveralls.io/github/europeana/europeana-blacklight?branch=master) [![security](https://hakiri.io/github/europeana/europeana-blacklight/master.svg)](https://hakiri.io/github/europeana/europeana-blacklight/master)
 
 Ruby gem providing an adapter to use the
 [Europeana REST API](http://labs.europeana.eu/api/introduction/) as a data
