@@ -1,5 +1,3 @@
-require 'europeana/api'
-
 module Europeana
   module Blacklight
     ##

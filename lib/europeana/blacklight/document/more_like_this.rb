@@ -42,7 +42,9 @@ module Europeana
 
         def more_like_this_param_query(param, terms, boost)
           return nil unless terms.present?
-          or_terms = terms.map { |v| '"' + v + '"' }.join(' OR ')
+          or_terms = terms.map do |v|
+            '"' + Europeana::API::Search.escape(v) + '"'
+          end.join(' OR ')
           "#{param}: (#{or_terms})^#{boost}"
         end
       end

@@ -20,6 +20,12 @@ RSpec.describe Europeana::Blacklight::Document::MoreLikeThis do
         it 'excludes doc by ID' do
           expect(subject.more_like_this_query).to match(/ NOT europeana_id:"#{source[:id]}"/)
         end
+        context 'when query has special chars' do
+          let(:source) { { id: '/abc/123', title: ['test & "pass"'] } }
+          it 'escapes special chars' do
+            expect(subject.more_like_this_query).to match(/title: \("test \\& \\"pass\\""\)/)
+          end
+        end
       end
 
       context 'when doc has multiple MLT fields' do

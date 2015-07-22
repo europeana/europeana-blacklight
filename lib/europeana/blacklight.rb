@@ -1,4 +1,5 @@
 require 'europeana/blacklight/version'
+require 'europeana/api'
 require 'blacklight'
 
 module Europeana
