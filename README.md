@@ -57,3 +57,21 @@ And then execute:
      config.europeana_api_cache_expires_in = 60.minutes # defaults to 24.hours
    end
    ```
+
+## Query facets
+
+In the configuration for query facet fields, the `:fq` option is a `Hash`, to
+permit specification of multiple parameters to be passed to the API:
+
+```ruby
+configure_blacklight do |config|
+  config.add_facet_field 'Cities (reusable content)', query: [
+    { label: 'Paris', fq: { qf: 'paris', reusability: 'open' } },
+    { label: 'Berlin', fq: { qf: 'berlin', reusability: 'open' } }
+  ]
+end
+```
+
+*Warning:* query facets are achieved by sending additional queries to the
+API. If you configure 10 query facets, this will result in an additional
+10 queries being sent to the API.
