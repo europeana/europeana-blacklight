@@ -3,7 +3,6 @@ module Europeana
     ##
     # Core search builder for {Europeana::Blacklight::ApiRepository}
     class SearchBuilder < ::Blacklight::SearchBuilder
-      require 'europeana/blacklight/search_builder/channels'
       require 'europeana/blacklight/search_builder/facet_pagination'
       require 'europeana/blacklight/search_builder/more_like_this'
       require 'europeana/blacklight/search_builder/ranges'
@@ -15,7 +14,6 @@ module Europeana
         :add_sorting_to_api
       ]
 
-      include Channels
       include FacetPagination
       include MoreLikeThis
       include Ranges
