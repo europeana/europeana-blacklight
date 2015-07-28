@@ -127,13 +127,17 @@ module Europeana
         def facet_query_aggregations
           return {} unless blacklight_config
 
-          blacklight_config.facet_fields.select { |_k, v| v.query }.each_with_object({}) do |(field_name, facet_field), hash|
-            salient_facet_queries = facet_field.query.map { |_k, x| x[:fq] }
-            items = []
-            facet_queries.select { |k, _v| salient_facet_queries.include?(k) }.reject { |_value, hits| hits == 0 }.map do |value, hits|
+          query_facet_fields = blacklight_config.facet_fields.select { |_k, v| v.query }
+          query_facet_fields.each_with_object({}) do |(field_name, facet_field), hash|
+            facet_query_params = facet_field.query.map { |_k, v| v[:fq] }
+            response_facet_queries = facet_queries.dup
+            response_facet_queries.select! { |k, _hits| facet_query_params.include?(k) }
+            response_facet_queries.reject! { |_k, hits| hits == 0 }
+
+            items = response_facet_queries.map do |value, hits|
               salient_fields = facet_field.query.select { |_k, v| v[:fq] == value }
               key = ((salient_fields.keys if salient_fields.respond_to? :keys) || salient_fields.first).first
-              items << FacetItem.new(value: key, hits: hits, label: facet_field.query[key][:label])
+              FacetItem.new(value: key, hits: hits, label: facet_field.query[key][:label])
             end
 
             hash[field_name] = FacetField.new(field_name, items)
