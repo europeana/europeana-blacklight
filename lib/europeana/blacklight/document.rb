@@ -20,10 +20,14 @@ module Europeana
       class << self
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          obj.values.reject { |v| v.is_a?(Array) }.size == 0
+          obj.keys.all? { |k| (k == 'def') || (k.length == 2) }
         end
 
         def localize_lang_map(lang_map)
+          if lang_map.is_a?(Array)
+            return lang_map.map { |l| localize_lang_map(l) }
+          end
+
           return lang_map unless lang_map?(lang_map)
           if lang_map.key?(I18n.locale)
             lang_map[I18n.locale]
