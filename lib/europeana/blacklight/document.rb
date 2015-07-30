@@ -51,7 +51,8 @@ module Europeana
       end
 
       def id
-        self['id'] || self['about']
+        return @id unless @id.nil?
+        @id = (self['id'] || self['about']).sub(%r{^//}, '/')
       end
 
       def fetch(key, *default)
@@ -90,11 +91,11 @@ module Europeana
       end
 
       def provider_id
-        @provider_id ||= self['id'].to_s.split('/')[1]
+        @provider_id ||= id.to_s.split('/')[1]
       end
 
       def record_id
-        @record_id ||= self['id'].to_s.split('/')[2]
+        @record_id ||= id.to_s.split('/')[2]
       end
 
       def as_json(options = nil)
