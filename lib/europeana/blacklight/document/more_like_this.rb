@@ -18,7 +18,7 @@ module Europeana
         def more_like_this_logic
           [
             { param: 'what', fields: ['proxies.dcType', 'proxies.dcSubject'], boost: 0.8 },
-            { param: 'who', fields: 'proxies.dcCreator', boost: 0.5 }
+            { param: 'who', fields: 'proxies.dcCreator', boost: 0.5 },
             { param: 'title', fields: 'title', boost: 0.3 },
             { param: 'DATA_PROVIDER', fields: 'aggregations.edmDataProvider', boost: 0.2 }
           ]
