@@ -18,9 +18,13 @@ module Europeana
       attr_accessor :hierarchy
 
       class << self
+        # @todo Are three-letter language codes valid in EDM?
+        # @todo Empty key acceptance is a workaround for malformed API data
+        #   output; remove when fixed at source
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          obj.keys.all? { |k| (k == 'def') || (k.length == 2) }
+          return true if obj.keys.all? { |k| (k == 'def') || (k == '') || (k.length == 2) }
+          obj.keys.all? { |k| (k == 'def') || (k == '') || (k.length == 3) }
         end
 
         def localize_lang_map(lang_map)
