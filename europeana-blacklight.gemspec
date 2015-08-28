@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'blacklight', '>= 5.12.0', '< 6.0.0'
   spec.add_dependency 'europeana-api', '~> 0.3.4'
+  spec.add_dependency 'iso-639', '~> 0.2.5'
   spec.add_dependency 'kaminari', '~> 0.16'
 
   spec.add_development_dependency 'bundler', '~> 1.8'

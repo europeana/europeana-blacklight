@@ -1,5 +1,6 @@
 require 'blacklight'
 require 'active_model'
+require 'iso-639'
 
 module Europeana
   module Blacklight
@@ -23,8 +24,7 @@ module Europeana
         #   output; remove when fixed at source
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          return true if obj.keys.all? { |k| (k == 'def') || (k == '') || (k.length == 2) }
-          obj.keys.all? { |k| (k == 'def') || (k == '') || (k.length == 3) }
+          obj.keys.all? { |k| (k == 'def') || (k == '') || (!ISO_639.find(k.split('-').first).nil?) }
         end
 
         def localize_lang_map(lang_map)
