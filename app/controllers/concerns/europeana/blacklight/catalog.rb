@@ -3,10 +3,10 @@ module Europeana
     module Catalog
       extend ActiveSupport::Concern
 
-      included do
-        include ::Blacklight::Catalog
-        include Europeana::Blacklight::SearchHelper
+      include ::Blacklight::Catalog
+      include Europeana::Blacklight::SearchHelper
 
+      included do
         self.search_params_logic = Europeana::Blacklight::SearchBuilder.default_processor_chain
 
         configure_blacklight do |config|
