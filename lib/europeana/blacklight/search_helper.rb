@@ -16,6 +16,29 @@ module Europeana
 
         api_params
       end
+
+      private
+
+      def fetch_many(ids = [], *args)
+        if args.length == 1
+          user_params = params
+          extra_controller_params = args.first || {}
+        else
+          user_params, extra_controller_params = args
+          user_params ||= params
+          extra_controller_params ||= {}
+        end
+
+        id_query = ids.map { |id| "europeana_id:\"/#{id}\"" }.join(' OR ')
+
+        query = search_builder.
+                  with(user_params).
+                  where(id_query).
+                  merge(extra_controller_params)
+        api_response = repository.search(query)
+
+        [api_response, api_response.documents]
+      end
     end
   end
 end
