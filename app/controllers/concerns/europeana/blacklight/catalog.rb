@@ -57,7 +57,6 @@ module Europeana
           config.add_facet_field 'LANGUAGE'
           config.add_facet_field 'PROVIDER'
           config.add_facet_field 'DATA_PROVIDER'
-          config.add_facet_field 'UGC', label: 'UGC'
           config.add_facet_field 'YEAR'
           config.add_facet_field 'RIGHTS'
 
