@@ -12,6 +12,7 @@ module Europeana
 
       include ActiveModel::Conversion
       include ::Blacklight::Document
+      include ::Blacklight::Document::ActiveModelShim
       include MoreLikeThis
       include Relations
 
