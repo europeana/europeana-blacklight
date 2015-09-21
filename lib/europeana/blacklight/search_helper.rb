@@ -31,11 +31,8 @@ module Europeana
 
         id_query = ids.map { |id| "europeana_id:\"/#{id}\"" }.join(' OR ')
 
-        query = search_builder.
-                  with(user_params).
-                  where(id_query).
-                  merge(extra_controller_params)
-        api_response = repository.search(query)
+        query = search_builder.with(user_params).where(id_query)
+        api_response = repository.search(query.merge(extra_controller_params))
 
         [api_response, api_response.documents]
       end
