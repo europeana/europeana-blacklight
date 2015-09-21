@@ -64,8 +64,8 @@ module Europeana
 
       def europeana_api_query_facet_count(query_field_fq, user_params)
         query = search_builder_class.new(search_params_logic, self).
-                  with(user_params).with_overlay_params(query_field_fq || {}).query.
-                  merge(rows: 0, start: 1, profile: 'minimal')
+          with(user_params).with_overlay_params(query_field_fq || {}).query.
+          merge(rows: 0, start: 1, profile: 'minimal')
         repository.search(query).total
       end
     end

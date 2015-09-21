@@ -104,7 +104,7 @@ module Europeana
 
       ##
       # Filter results by a query facet
-      def add_query_facet_to_api(api_parameters)
+      def add_query_facet_to_api(_api_parameters)
         return unless blacklight_params[:f]
 
         salient_facets = blacklight_params[:f].select do |k, _v|
