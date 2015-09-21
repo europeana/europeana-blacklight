@@ -6,6 +6,7 @@ AllCops:
   Exclude:
   - "vendor/**/*"
   - "db/**/*"
+  - "lib/generators/europeana/blacklight/templates/**/*"
   RunRailsCops: true
   DisplayCopNames: false
   StyleGuideCopsOnly: false
