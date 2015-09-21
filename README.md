@@ -6,57 +6,35 @@ Ruby gem providing an adapter to use the
 [Europeana REST API](http://labs.europeana.eu/api/introduction/) as a data
 source for [Blacklight](http://projectblacklight.org/).
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'europeana-blacklight',
-  github: 'europeana/europeana-blacklight',
-  require: 'europeana/blacklight'
-```
-
-And then execute:
-
-    $ bundle
-
 ## Usage
 
-1. Get a Europeana API key from http://labs.europeana.eu/api/
-2. Set the API key in `config/blacklight.yml`:
-    
-    ```yml
-    production:
-      europeana_api_key: YOUR_API_KEY
-    ```
-    
-3. Configure Blacklight to use the Europeana API adapter:
-    
-    ```ruby
-    class CatalogController < ApplicationController
-      self.search_params_logic = Europeana::Blacklight::SearchBuilder.default_processor_chain
+See the [Quick Start Guide](QUICKSTART.md).
 
-      configure_blacklight do |config|
-        config.repository_class = Europeana::Blacklight::ApiRepository
-        config.search_builder_class = Europeana::Blacklight::SearchBuilder
-        config.response_model = Europeana::Blacklight::Response
-        config.document_model = Europeana::Blacklight::Document
-        config.document_presenter_class = Europeana::Blacklight::DocumentPresenter
-        config.facet_paginator_class = Europeana::Blacklight::FacetPaginator
-      end
-    end
-    ```
+## Features
 
-4. Caching (optional)
+### Supported Blacklight features
 
-   To enable caching of API responses:
+* Search
+* View record
+* Pagination of search results
+* Field facets
+* [Query facets](#query-facets)
+* Facet limits
+* Fielded search
+* Bookmarks
+* Range queries
 
-   ```ruby
-   configure_blacklight do |config|
-     config.europeana_api_cache = Rails.cache # or any {ActiveSupport::Cache} instance
-     config.europeana_api_cache_expires_in = 60.minutes # defaults to 24.hours
-   end
-   ```
+### Unsupported Blacklight features
+
+* Result sorting :(
+* "Did you mean" spellcheck
+* MLT Solr-style (but see custom features)
+
+### Custom features
+
+* Nested EDM field names
+* MLT by record ID in :mlt URL parameter
+* Query facets with arbitrary API parameters
 
 ## Query facets
 
@@ -65,13 +43,14 @@ permit specification of multiple parameters to be passed to the API:
 
 ```ruby
 configure_blacklight do |config|
-  config.add_facet_field 'Cities (reusable content)', query: [
-    { label: 'Paris', fq: { qf: 'paris', reusability: 'open' } },
-    { label: 'Berlin', fq: { qf: 'berlin', reusability: 'open' } }
-  ]
+  config.add_facet_field 'Cities (reusable content)', query: {
+    paris: { label: 'Paris', fq: { qf: 'paris', reusability: 'open' } },
+    berlin: { label: 'Berlin', fq: { qf: 'berlin', reusability: 'open' } }
+  }
 end
 ```
 
 *Warning:* query facets are achieved by sending additional queries to the
-API. If you configure 10 query facets, this will result in an additional
-10 queries being sent to the API.
+API. If you configure 2 query facets each with 10 facet values, this will result
+in an additional 20 queries being sent to the API.
+
