@@ -103,7 +103,7 @@ RSpec.describe Europeana::Blacklight::Document do
     context 'with nested key' do
       context 'when key is present' do
         subject { described_class.new(edm).has?('proxies.about') }
-        it { is_expected.to eq(false) }
+        it { is_expected.to eq(true) }
       end
 
       context 'when key is absent' do
