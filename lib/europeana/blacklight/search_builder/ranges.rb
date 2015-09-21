@@ -2,7 +2,7 @@ module Europeana
   module Blacklight
     class SearchBuilder
       ##
-      # Search builder with content channel qf
+      # Search builder methods for ranges
       module Ranges
         extend ActiveSupport::Concern
 
