@@ -3,8 +3,8 @@ module Europeana
     class Install < Rails::Generators::Base
       source_root File.expand_path('../templates', __FILE__)
 
-      argument :europeana_api_key  , type: :string
-      argument :controller_name, type: :string , default: 'catalog'
+      argument :europeana_api_key, type: :string
+      argument :controller_name, type: :string, default: 'catalog'
 
       def disable_rsolr_gem
         comment_lines('Gemfile', /gem 'rsolr'/)
