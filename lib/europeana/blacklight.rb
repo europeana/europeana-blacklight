@@ -1,7 +1,8 @@
-require 'europeana/blacklight/version'
-require 'europeana/api'
+require 'active_support/core_ext/module/delegation'
 require 'blacklight'
+require 'europeana/api'
 require 'europeana/blacklight/engine' if defined?(Rails)
+require 'europeana/blacklight/version'
 
 module Europeana
   ##

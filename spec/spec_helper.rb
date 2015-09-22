@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'europeana/blacklight'
 require 'coveralls'
+require 'europeana/blacklight'
+require 'shoulda/matchers'
 require 'webmock/rspec'
 
 Coveralls.wear! unless Coveralls.will_run?.nil?
