@@ -25,13 +25,13 @@ RSpec.describe Europeana::Blacklight::ApiRepository do
     it 'should send a record query to the API' do
       subject.find(record_id)
       expect(a_request(:get, "www.europeana.eu/api/v2/record#{record_id}.json").
-        with(:query => hash_including({'wskey' => api_key}))).to have_been_made
+        with(query: hash_including({ 'wskey' => api_key }))).to have_been_made
     end
 
     it 'should pass on API query params' do
       subject.find(record_id, callback: 'showRecord')
       expect(a_request(:get, "www.europeana.eu/api/v2/record#{record_id}.json").
-        with(:query => hash_including({'wskey' => api_key, 'callback' => 'showRecord'}))).to have_been_made
+        with(query: hash_including({ 'wskey' => api_key, 'callback' => 'showRecord' }))).to have_been_made
     end
 
     it 'should return configured response model' do
@@ -45,7 +45,7 @@ RSpec.describe Europeana::Blacklight::ApiRepository do
     it 'should send a search query to the API' do
       subject.search('query' => query)
       expect(a_request(:get, 'www.europeana.eu/api/v2/search.json').
-        with(:query => hash_including({'wskey' => api_key, 'query' => query}))).to have_been_made
+        with(query: hash_including({ 'wskey' => api_key, 'query' => query }))).to have_been_made
     end
 
     it 'should return configured response model' do
