@@ -136,7 +136,9 @@ module Europeana
       # @see http://labs.europeana.eu/api/search/#individual-facets
       # @see http://labs.europeana.eu/api/search/#offset-and-limit-of-facets
       def add_facetting_to_api(api_parameters)
-        api_parameters[:facet] = api_request_facet_fields.keys.join(',')
+        api_parameters[:facet] = api_request_facet_fields.keys.map do |field|
+          Europeana::API::Search::Fields::MEDIA.include?(field) ? 'DEFAULT' : field
+        end.uniq.join(',')
 
         api_request_facet_fields.each do |field_name, facet|
           api_parameters[:"f.#{facet.field}.facet.limit"] = (facet_limit_for(field_name) + 1) if facet_limit_for(field_name)
