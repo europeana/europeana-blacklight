@@ -25,7 +25,7 @@ module Europeana
 
       # Empty search returns all records
       def has_search_parameters?
-        super || params.key?(:q) # map empty search to *:* query wildcard
+        super || params.key?(:q) || params.key?(:mlt)
       end
 
       def search_results(user_params, _search_params_logic)
