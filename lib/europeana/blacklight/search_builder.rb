@@ -5,11 +5,13 @@ module Europeana
     class SearchBuilder < ::Blacklight::SearchBuilder
       require 'europeana/blacklight/search_builder/facet_pagination'
       require 'europeana/blacklight/search_builder/more_like_this'
+      require 'europeana/blacklight/search_builder/overlay_params'
       require 'europeana/blacklight/search_builder/ranges'
 
+      attr_accessor :default_processor_chain
       self.default_processor_chain = [
         :default_api_parameters, :add_profile_to_api,
-        :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api,
+        :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
         :add_reusability_to_api, :add_facetting_to_api, :add_paging_to_api,
         :add_sorting_to_api
       ]
@@ -17,6 +19,7 @@ module Europeana
       include FacetPagination
       include MoreLikeThis
       include Ranges
+      include OverlayParams
 
       delegate :to_query, to: :to_hash
 
@@ -87,8 +90,8 @@ module Europeana
       def add_facet_qf_to_api(api_parameters)
         return unless blacklight_params[:f]
 
-        salient_facets = blacklight_params[:f].reject do |k, _v|
-          k == 'REUSABILITY'
+        salient_facets = blacklight_params[:f].select do |k, _v|
+          (k != 'REUSABILITY') && api_request_facet_fields.keys.include?(k)
         end
 
         salient_facets.each_pair do |facet_field, value_list|
@@ -99,8 +102,26 @@ module Europeana
         end
       end
 
-      # bizarrely, reusability is a distinct API param, even though it
-      # is returned with the facets in a search response
+      ##
+      # Filter results by a query facet
+      def add_query_facet_to_api(_api_parameters)
+        return unless blacklight_params[:f]
+
+        salient_facets = blacklight_params[:f].select do |k, _v|
+          facet = blacklight_config.facet_fields[k]
+          facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
+        end
+
+        salient_facets.each_pair do |facet_field, value_list|
+          Array(value_list).reject(&:blank?).each do |value|
+            with_overlay_params(blacklight_config.facet_fields[facet_field].query[value][:fq])
+          end
+        end
+      end
+
+      ##
+      # Reusability is a distinct API param, even though it is returned with the
+      # facets in a search response
       def add_reusability_to_api(api_parameters)
         if blacklight_params[:f] && blacklight_params[:f]['REUSABILITY']
           api_parameters[:reusability] = blacklight_params[:f]['REUSABILITY'].join(',')

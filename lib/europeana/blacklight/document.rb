@@ -12,6 +12,7 @@ module Europeana
 
       include ActiveModel::Conversion
       include ::Blacklight::Document
+      include ::Blacklight::Document::ActiveModelShim
       include MoreLikeThis
       include Relations
 
@@ -24,7 +25,7 @@ module Europeana
         #   output; remove when fixed at source
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          obj.keys.all? { |k| (k == 'def') || (k == '') || (!ISO_639.find(k.split('-').first).nil?) }
+          obj.keys.map(&:to_s).all? { |k| (k == 'def') || (k == '') || (!ISO_639.find(k.split('-').first).nil?) }
         end
 
         def localize_lang_map(lang_map)
@@ -48,6 +49,8 @@ module Europeana
           end
         end
       end
+
+      delegate :lang_map?, :localize_lang_map, to: :class
 
       def initialize(source_doc = {}, response = nil)
         fields, @relations = extract_relations(source_doc)
@@ -86,11 +89,11 @@ module Europeana
         true
       end
 
-      def private?(exhibit)
-        !public?(exhibit)
+      def private?(_exhibit)
+        false
       end
 
-      def public?(exhibit)
+      def public?(_exhibit)
         true
       end
 
@@ -112,14 +115,6 @@ module Europeana
             j[k] = v.as_json
           end
         end
-      end
-
-      def lang_map?(obj)
-        self.class.lang_map?(obj)
-      end
-
-      def localize_lang_map(lang_map)
-        self.class.localize_lang_map(lang_map)
       end
     end
   end

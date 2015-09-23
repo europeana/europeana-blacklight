@@ -68,6 +68,31 @@ module Europeana
           end
         end
 
+        def has?(k, *values)
+          if !key?(k)
+            false
+          elsif values.empty?
+            fetch(k, nil).present?
+          else
+            Array(values).any? do |expected|
+              Array(fetch(k, nil)).any? do |actual|
+                case expected
+                when Regexp
+                  actual =~ expected
+                else
+                  actual == expected
+                end
+              end
+            end
+          end
+        end
+
+        def key?(k)
+          [nested_field_container(k)].flatten.any? do |container|
+            container._source.key?(nested_field_key(k))
+          end
+        end
+
         def has_relation?(name)
           relations.key?(name.to_s)
         end

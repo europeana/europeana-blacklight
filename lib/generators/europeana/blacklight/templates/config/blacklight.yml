@@ -1,0 +1,8 @@
+default: &default
+  europeana_api_key: <%= europeana_api_key %>
+development:
+  <<: *default
+test:
+  <<: *default
+production:
+  <<: *default

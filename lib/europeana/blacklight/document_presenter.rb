@@ -3,7 +3,7 @@ module Europeana
     ##
     # Blacklight document presenter for Europeana documents
     class DocumentPresenter < ::Blacklight::DocumentPresenter
-      include ActionView::Helpers::AssetTagHelper
+      include ActionView::Helpers::AssetTagHelper # ?
 
       def render_document_show_field_value(field, options = {})
         render_nested_field_value(field, :show, options)

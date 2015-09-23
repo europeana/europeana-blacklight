@@ -46,6 +46,11 @@ RSpec.describe Europeana::Blacklight::Document do
     }
   end
 
+  describe '.model_name' do
+    subject { described_class.model_name.to_s }
+    it { is_expected.to eq('Document') }
+  end
+
   describe '.lang_map?' do
     context 'when not a Hash' do
       it 'returns false' do
@@ -68,6 +73,9 @@ RSpec.describe Europeana::Blacklight::Document do
       end
     end
   end
+
+  it { is_expected.to delegate_method(:lang_map?).to(:class) }
+  it { is_expected.to delegate_method(:localize_lang_map).to(:class) }
 
   describe '#provider_id' do
     it 'returns first part of ID' do
@@ -103,7 +111,7 @@ RSpec.describe Europeana::Blacklight::Document do
     context 'with nested key' do
       context 'when key is present' do
         subject { described_class.new(edm).has?('proxies.about') }
-        it { is_expected.to eq(false) }
+        it { is_expected.to eq(true) }
       end
 
       context 'when key is absent' do
@@ -204,5 +212,20 @@ RSpec.describe Europeana::Blacklight::Document do
         end
       end
     end
+  end
+
+  describe '#persisted?' do
+    subject { described_class.new(edm).persisted? }
+    it { is_expected.to be true }
+  end
+
+  describe '#public?' do
+    subject { described_class.new(edm).public?(nil) }
+    it { is_expected.to be true }
+  end
+
+  describe '#private?' do
+    subject { described_class.new(edm).private?(nil) }
+    it { is_expected.to be false }
   end
 end
