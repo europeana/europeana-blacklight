@@ -12,8 +12,8 @@ module Europeana
       self.default_processor_chain = [
         :default_api_parameters, :add_profile_to_api,
         :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
-        :add_reusability_to_api, :add_facetting_to_api, :add_paging_to_api,
-        :add_sorting_to_api, :add_colourpalette_to_api
+        :add_standalone_facets_to_api, :add_facetting_to_api, :add_paging_to_api,
+        :add_sorting_to_api
       ]
 
       include FacetPagination
@@ -22,6 +22,8 @@ module Europeana
       include OverlayParams
 
       delegate :to_query, to: :to_hash
+
+      STANDALONE_FACETS = %w(COLOURPALETTE MEDIA REUSABILITY)
 
       ##
       # Start with general defaults from BL config. Need to use custom
@@ -91,7 +93,7 @@ module Europeana
         return unless blacklight_params[:f]
 
         salient_facets = blacklight_params[:f].select do |k, _v|
-          !%w(REUSABILITY COLOURPALETTE).include?(k) && api_request_facet_fields.keys.include?(k)
+          !STANDALONE_FACETS.include?(k) && api_request_facet_fields.keys.include?(k)
         end
 
         salient_facets.each_pair do |facet_field, value_list|
@@ -124,17 +126,13 @@ module Europeana
       end
 
       ##
-      # Reusability is a distinct API param, even though it is returned with the
-      # facets in a search response
-      def add_reusability_to_api(api_parameters)
-        if blacklight_params[:f] && blacklight_params[:f]['COLOURPALETTE']
-          api_parameters[:colourpalette] = blacklight_params[:f]['COLOURPALETTE'].join(',')
-        end
-      end
-
-      def add_colourpalette_to_api(api_parameters)
-        if blacklight_params[:f] && blacklight_params[:f]['REUSABILITY']
-          api_parameters[:reusability] = blacklight_params[:f]['REUSABILITY'].join(',')
+      # Some facets need to be filtered as distinct API params, even though
+      # they are returned with the facets in a search response
+      def add_standalone_facets_to_api(api_parameters)
+        STANDALONE_FACETS.each do |field|
+          if blacklight_params[:f] && blacklight_params[:f][field]
+            api_parameters[field.downcase.to_sym] = blacklight_params[:f][field].join(',')
+          end
         end
       end
 
