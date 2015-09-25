@@ -13,7 +13,7 @@ module Europeana
         :default_api_parameters, :add_profile_to_api,
         :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
         :add_reusability_to_api, :add_facetting_to_api, :add_paging_to_api,
-        :add_sorting_to_api
+        :add_sorting_to_api, :add_colourpalette_to_api
       ]
 
       include FacetPagination
@@ -91,7 +91,7 @@ module Europeana
         return unless blacklight_params[:f]
 
         salient_facets = blacklight_params[:f].select do |k, _v|
-          (k != 'REUSABILITY') && api_request_facet_fields.keys.include?(k)
+          !%w(REUSABILITY COLOURPALETTE).include?(k) && api_request_facet_fields.keys.include?(k)
         end
 
         salient_facets.each_pair do |facet_field, value_list|
@@ -127,6 +127,12 @@ module Europeana
       # Reusability is a distinct API param, even though it is returned with the
       # facets in a search response
       def add_reusability_to_api(api_parameters)
+        if blacklight_params[:f] && blacklight_params[:f]['COLOURPALETTE']
+          api_parameters[:colourpalette] = blacklight_params[:f]['COLOURPALETTE'].join(',')
+        end
+      end
+
+      def add_colourpalette_to_api(api_parameters)
         if blacklight_params[:f] && blacklight_params[:f]['REUSABILITY']
           api_parameters[:reusability] = blacklight_params[:f]['REUSABILITY'].join(',')
         end
