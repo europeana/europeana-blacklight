@@ -97,7 +97,11 @@ module Europeana
         salient_facets.each_pair do |facet_field, value_list|
           Array(value_list).reject(&:blank?).each do |value|
             api_parameters[:qf] ||= []
-            api_parameters[:qf] << "#{facet_field}:\"#{value}\""
+            if Europeana::API::Search::Fields::MEDIA.include?(facet_field)
+              api_parameters[:qf] << "#{facet_field}:#{value}"
+            else
+              api_parameters[:qf] << "#{facet_field}:\"#{value}\""
+            end
           end
         end
       end
