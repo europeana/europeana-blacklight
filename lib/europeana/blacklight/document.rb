@@ -105,14 +105,11 @@ module Europeana
         @record_id ||= id.to_s.split('/')[2]
       end
 
-      def as_json(options = nil)
-        json = super
-        unless @hierarchy.nil?
-          json.merge!('hierarchy' => @hierarchy.as_json(options))
-        end
-        json.tap do |j|
+      def as_json(options = {})
+        super.tap do |json|
+          json['hierarchy'] = @hierarchy.as_json(options) unless @hierarchy.nil?
           relations.each do |k, v|
-            j[k] = v.as_json
+            json[k] = v.as_json
           end
         end
       end
