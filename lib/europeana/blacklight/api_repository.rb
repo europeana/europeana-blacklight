@@ -13,7 +13,7 @@ module Europeana
       # @return (see blacklight_config.response_model)
       def find(id, params = {})
         id = "/#{id}" unless id[0] == '/'
-        connection.record(id, params)
+        res = connection.record(id, params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -22,7 +22,7 @@ module Europeana
       end
 
       def search(params = {})
-        connection.search(params)
+        res = connection.search(params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
