@@ -13,11 +13,7 @@ module Europeana
       # @return (see blacklight_config.response_model)
       def find(id, params = {})
         id = "/#{id}" unless id[0] == '/'
-        cache_key = "Europeana:API:Record:#{id}"
-        cache_key << ':' + params.to_query unless params.blank?
-        res = cached(cache_key) do
-          connection.record(id, params)
-        end
+        connection.record(id, params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -26,10 +22,7 @@ module Europeana
       end
 
       def search(params = {})
-        cache_key = "Europeana:API:Search:" + params.to_query
-        res = cached(cache_key) do
-          connection.search(params)
-        end
+        connection.search(params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -69,13 +62,15 @@ module Europeana
       def build_connection
         Europeana::API.tap do |api|
           api.api_key = blacklight_config.connection_config[:europeana_api_key]
+          api.cache_store = cache_store
+          api.cache_expires_in = cache_expires_in
         end
       end
 
       protected
 
-      def cache
-        @cache ||= begin
+      def cache_store
+        @cache_store ||= begin
           blacklight_config.europeana_api_cache || ActiveSupport::Cache::NullStore.new
         end
       end
@@ -83,12 +78,6 @@ module Europeana
       def cache_expires_in
         @expires_in ||= begin
           blacklight_config.europeana_api_cache_expires_in || 24.hours
-        end
-      end
-
-      def cached(key)
-        cache.fetch(key, expires_in: cache_expires_in) do
-          yield
         end
       end
     end
