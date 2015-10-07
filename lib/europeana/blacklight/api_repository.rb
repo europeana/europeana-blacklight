@@ -13,11 +13,7 @@ module Europeana
       # @return (see blacklight_config.response_model)
       def find(id, params = {})
         id = "/#{id}" unless id[0] == '/'
-        cache_key = "Europeana:API:Record:#{id}"
-        cache_key << ':' + params.to_query unless params.blank?
-        res = cached(cache_key) do
-          connection.record(id, auth_params(params))
-        end
+        res = connection.record(id, params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -26,10 +22,7 @@ module Europeana
       end
 
       def search(params = {})
-        cache_key = "Europeana:API:Search:" + params.to_query
-        res = cached(cache_key) do
-          connection.search(auth_params(params))
-        end
+        res = connection.search(params)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -45,36 +38,15 @@ module Europeana
       #
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data, or false if it has none
-      def fetch_document_hierarchy(id)
-        cached("Europeana:API:Record:hierarchy:#{id}") do
-          begin
-            europeana_api_document_hierarchy(id)
-          rescue Europeana::API::Errors::RequestError => error
-            unless error.message == 'This record has no hierarchical structure!'
-              raise
-            end
-            false
-          end
+      def fetch_document_hierarchy(id, relation = nil, options = {})
+        connection::Record.new(id).hierarchy.tap do |hierarchy|
+          relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
         end
-      end
-
-      ##
-      # Requests hierarchy data for a Europeana record from the REST API
-      #
-      # The return value will contain a combination of the responses from the
-      # ancestor-self-siblings and children API endpoints.
-      #
-      # @param id [String] Europeana record ID, with leading slash
-      # @return [Hash] Record's hierarchy data
-      def europeana_api_document_hierarchy(id)
-        record = Europeana::API::Record.new(id, auth_params)
-        hierarchy = record.hierarchy('ancestor-self-siblings')
-
-        if hierarchy['self']['hasChildren']
-          hierarchy = record.hierarchy('ancestor-self-siblings', :children)
+      rescue Europeana::API::Errors::RequestError => error
+        unless error.message == 'This record has no hierarchical structure!'
+          raise
         end
-
-        hierarchy
+        false
       end
 
       ##
@@ -88,19 +60,17 @@ module Europeana
       end
 
       def build_connection
-        Europeana::API
+        Europeana::API.tap do |api|
+          api.api_key = blacklight_config.connection_config[:europeana_api_key]
+          api.cache_store = cache_store
+          api.cache_expires_in = cache_expires_in
+        end
       end
 
       protected
 
-      def auth_params(params = {})
-        {
-          wskey: blacklight_config.connection_config[:europeana_api_key]
-        }.merge(params)
-      end
-
-      def cache
-        @cache ||= begin
+      def cache_store
+        @cache_store ||= begin
           blacklight_config.europeana_api_cache || ActiveSupport::Cache::NullStore.new
         end
       end
@@ -108,12 +78,6 @@ module Europeana
       def cache_expires_in
         @expires_in ||= begin
           blacklight_config.europeana_api_cache_expires_in || 24.hours
-        end
-      end
-
-      def cached(key)
-        cache.fetch(key, expires_in: cache_expires_in) do
-          yield
         end
       end
     end
