@@ -17,6 +17,19 @@ module Europeana
         api_params
       end
 
+      def fetch_with_hierarchy(id, extra_controller_params = {})
+        response, document = fetch(id, extra_controller_params)
+        hierarchy = repository.fetch_document_hierarchy(id)
+        response.documents.first.hierarchy = {
+          self: blacklight_config.document_model.new(hierarchy),
+          parent: hierarchy.parent.present? ? blacklight_config.document_model.new(hierarchy.parent) : nil,
+          children: hierarchy.children.map { |c| blacklight_config.document_model.new(c) },
+          preceding_siblings: hierarchy.preceding_siblings.map { |s| blacklight_config.document_model.new(s) },
+          following_siblings: hierarchy.following_siblings.map { |s| blacklight_config.document_model.new(s) }
+        }
+        [response, response.documents.first]
+      end
+
       private
 
       def fetch_many(ids = [], *args)

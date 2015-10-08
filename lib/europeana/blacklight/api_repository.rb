@@ -33,9 +33,6 @@ module Europeana
       ##
       # Fetches the hierarchy data for a Europeana record
       #
-      # If the hierarchy data for the requested record is cached, that will be
-      # returned, otherwise it will be obtained from the Europeana REST API.
-      #
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data, or false if it has none
       def fetch_document_hierarchy(id, relation = nil, options = {})
