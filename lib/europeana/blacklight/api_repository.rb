@@ -40,10 +40,7 @@ module Europeana
           relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
         end
       rescue Europeana::API::Errors::RequestError => error
-        unless error.message == 'This record has no hierarchical structure!'
-          raise
-        end
-        false
+        raise unless error.message == 'This record has no hierarchical structure!'
       end
 
       ##

@@ -19,18 +19,22 @@ module Europeana
 
       def fetch_with_hierarchy(id, extra_controller_params = {})
         response, document = fetch(id, extra_controller_params)
+        response.documents.first.hierarchy = europeana_record_hierarchy(id)
+        [response, response.documents.first]
+      end
+
+      private
+
+      def europeana_record_hierarchy(id)
         hierarchy = repository.fetch_document_hierarchy(id)
-        response.documents.first.hierarchy = {
+        hierarchy.nil? ? nil : {
           self: blacklight_config.document_model.new(hierarchy),
           parent: hierarchy.parent.present? ? blacklight_config.document_model.new(hierarchy.parent) : nil,
           children: hierarchy.children.map { |c| blacklight_config.document_model.new(c) },
           preceding_siblings: hierarchy.preceding_siblings.map { |s| blacklight_config.document_model.new(s) },
           following_siblings: hierarchy.following_siblings.map { |s| blacklight_config.document_model.new(s) }
         }
-        [response, response.documents.first]
       end
-
-      private
 
       def fetch_many(ids = [], *args)
         if args.length == 1
