@@ -37,7 +37,7 @@ module Europeana
       # @return [Hash] Record's hierarchy data, or false if it has none
       def fetch_document_hierarchy(id, relation = nil, options = {})
         fail ArgumentError, "Invalid relation \"#{relation}\"" unless relation.nil? ||
-          %w(parent children following_siblings preceding_siblings).include?(relation)
+            %w(parent children following_siblings preceding_siblings).include?(relation)
 
         hierarchy = connection::Record.new(id).hierarchy
         relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
