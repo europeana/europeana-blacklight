@@ -1,4 +1,5 @@
-require 'active_support/core_ext'
+require 'active_support/core_ext/hash'
+require 'active_support/core_ext/module/delegation'
 require 'blacklight'
 require 'europeana/api'
 require 'europeana/blacklight/engine' if defined?(Rails)
