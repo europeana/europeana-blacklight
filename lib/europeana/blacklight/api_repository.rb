@@ -36,9 +36,11 @@ module Europeana
       # @param id [String] Europeana record ID, with leading slash
       # @return [Hash] Record's hierarchy data, or false if it has none
       def fetch_document_hierarchy(id, relation = nil, options = {})
-        connection::Record.new(id).hierarchy.tap do |hierarchy|
-          relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
-        end
+        fail ArgumentError, "Invalid relation \"#{relation}\"" unless relation.nil? ||
+            %w(parent children following_siblings preceding_siblings).include?(relation)
+
+        hierarchy = connection::Record.new(id).hierarchy
+        relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
       rescue Europeana::API::Errors::RequestError => error
         raise unless error.message == 'This record has no hierarchical structure!'
       end

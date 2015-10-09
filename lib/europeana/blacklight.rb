@@ -1,3 +1,4 @@
+require 'active_support/core_ext/hash'
 require 'active_support/core_ext/module/delegation'
 require 'blacklight'
 require 'europeana/api'
