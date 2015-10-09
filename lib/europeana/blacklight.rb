@@ -1,4 +1,4 @@
-require 'active_support/core_ext/module/delegation'
+require 'active_support/core_ext'
 require 'blacklight'
 require 'europeana/api'
 require 'europeana/blacklight/engine' if defined?(Rails)
