@@ -17,7 +17,6 @@ module Europeana
       include Relations
 
       attr_writer :provider_id, :record_id
-      attr_accessor :hierarchy
 
       class << self
         # @todo Are three-letter language codes valid in EDM?
@@ -107,7 +106,6 @@ module Europeana
 
       def as_json(options = {})
         super.tap do |json|
-          json['hierarchy'] = @hierarchy.as_json(options) unless @hierarchy.nil?
           relations.each do |k, v|
             json[k] = v.as_json
           end

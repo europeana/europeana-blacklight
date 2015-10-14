@@ -31,21 +31,6 @@ module Europeana
       end
 
       ##
-      # Fetches the hierarchy data for a Europeana record
-      #
-      # @param id [String] Europeana record ID, with leading slash
-      # @return [Hash] Record's hierarchy data, or false if it has none
-      def fetch_document_hierarchy(id, relation = nil, options = {})
-        fail ArgumentError, "Invalid relation \"#{relation}\"" unless relation.nil? ||
-            %w(parent children following_siblings preceding_siblings).include?(relation)
-
-        hierarchy = connection::Record.new(id).hierarchy
-        relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
-      rescue Europeana::API::Errors::RequestError => error
-        raise unless error.message == 'This record has no hierarchical structure!'
-      end
-
-      ##
       # Queries the API for items similar to a given document
       def more_like_this(doc, field = nil, params = {})
         query = doc.more_like_this_query(field)

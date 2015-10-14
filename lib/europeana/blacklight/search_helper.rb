@@ -17,35 +17,6 @@ module Europeana
         api_params
       end
 
-      def fetch_with_hierarchy(id, extra_controller_params = {})
-        response, document = fetch(id, extra_controller_params)
-        response.documents.first.hierarchy = fetch_full_hierarchy(id)
-        [response, response.documents.first]
-      end
-
-      def fetch_full_hierarchy(id)
-        hierarchy = repository.fetch_document_hierarchy(id)
-        return nil if hierarchy.nil?
-        {
-          self: blacklight_config.document_model.new(hierarchy),
-          parent: hierarchy.parent.present? ? blacklight_config.document_model.new(hierarchy.parent) : nil,
-          children: hierarchy.children.map { |c| blacklight_config.document_model.new(c) },
-          preceding_siblings: hierarchy.preceding_siblings.map { |s| blacklight_config.document_model.new(s) },
-          following_siblings: hierarchy.following_siblings.map { |s| blacklight_config.document_model.new(s) }
-        }
-      end
-
-      # relations: self, parent, children, preceding_siblings, following_siblings
-      # options: page, per_page
-      def fetch_hierarchy_relation(id, relation, options = {})
-        hierarchy = repository.fetch_document_hierarchy(id, relation, options)
-        if hierarchy.is_a?(Array)
-          hierarchy.map { |item| blacklight_config.document_model.new(item) }
-        else
-          blacklight_config.document_model.new(hierarchy)
-        end
-      end
-
       private
 
       def fetch_many(ids = [], *args)

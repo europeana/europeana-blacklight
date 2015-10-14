@@ -121,14 +121,6 @@ RSpec.describe Europeana::Blacklight::Document do
     end
   end
 
-  describe '#as_json' do
-    it 'includes hierarchy' do
-      doc = described_class.new(edm)
-      doc.hierarchy = double('hierarchy')
-      expect(doc.as_json).to include('hierarchy')
-    end
-  end
-
   describe '#[]' do
     it 'handles unnested keys' do
       expect(subject['type']).to eq('IMAGE')
