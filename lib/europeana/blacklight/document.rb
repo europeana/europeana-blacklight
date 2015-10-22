@@ -24,7 +24,11 @@ module Europeana
         #   output; remove when fixed at source
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          obj.keys.map(&:to_s).all? { |k| (k == 'def') || (k == '') || (!ISO_639.find(k.split('-').first).nil?) }
+          obj.keys.map(&:to_s).all? { |key| known_lang_map_key?(key) }
+        end
+
+        def known_lang_map_key?(key)
+          ['def', '', 'sh'].include?(key) || (!ISO_639.find(key.split('-').first).nil?)
         end
 
         def localize_lang_map(lang_map)
