@@ -10,6 +10,7 @@ module Europeana
       module Pagination
         include Kaminari::PageScopeMethods
         include Kaminari::ConfigurationMethods::ClassMethods
+        extend ActiveSupport::Concern
 
         def limit_value
           rows
@@ -26,6 +27,15 @@ module Europeana
         def model_name
           return unless docs.present? && docs.first.respond_to?(:model_name)
           docs.first.model_name
+        end
+
+        def max_pages
+          (defined?(@_max_pages) && @_max_pages) || (1000 / limit_value)
+        end
+
+        def total_pages
+          total = super
+          total > max_pages ? max_pages : total
         end
 
         def next_page
