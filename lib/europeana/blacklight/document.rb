@@ -28,6 +28,7 @@ module Europeana
         end
 
         def known_lang_map_key?(key)
+          key = key.dup.downcase
           ['def', '', 'sh'].include?(key) || (!ISO_639.find(key.split('-').first).nil?)
         end
 
