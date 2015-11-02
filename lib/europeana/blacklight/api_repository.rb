@@ -31,25 +31,6 @@ module Europeana
       end
 
       ##
-      # Fetches the hierarchy data for a Europeana record
-      #
-      # If the hierarchy data for the requested record is cached, that will be
-      # returned, otherwise it will be obtained from the Europeana REST API.
-      #
-      # @param id [String] Europeana record ID, with leading slash
-      # @return [Hash] Record's hierarchy data, or false if it has none
-      def fetch_document_hierarchy(id, relation = nil, options = {})
-        connection::Record.new(id).hierarchy.tap do |hierarchy|
-          relation.nil? ? hierarchy.with_family : hierarchy.send(relation, options)
-        end
-      rescue Europeana::API::Errors::RequestError => error
-        unless error.message == 'This record has no hierarchical structure!'
-          raise
-        end
-        false
-      end
-
-      ##
       # Queries the API for items similar to a given document
       def more_like_this(doc, field = nil, params = {})
         query = doc.more_like_this_query(field)

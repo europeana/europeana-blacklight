@@ -17,7 +17,6 @@ module Europeana
       include Relations
 
       attr_writer :provider_id, :record_id
-      attr_accessor :hierarchy
 
       class << self
         # @todo Are three-letter language codes valid in EDM?
@@ -25,7 +24,12 @@ module Europeana
         #   output; remove when fixed at source
         def lang_map?(obj)
           return false unless obj.is_a?(Hash)
-          obj.keys.map(&:to_s).all? { |k| (k == 'def') || (k == '') || (!ISO_639.find(k.split('-').first).nil?) }
+          obj.keys.map(&:to_s).all? { |key| known_lang_map_key?(key) }
+        end
+
+        def known_lang_map_key?(key)
+          key = key.dup.downcase
+          ['def', '', 'sh'].include?(key) || (!ISO_639.find(key.split('-').first).nil?)
         end
 
         def localize_lang_map(lang_map)
@@ -107,7 +111,6 @@ module Europeana
 
       def as_json(options = {})
         super.tap do |json|
-          json['hierarchy'] = @hierarchy.as_json(options) unless @hierarchy.nil?
           relations.each do |k, v|
             json[k] = v.as_json
           end
