@@ -38,12 +38,25 @@ module Europeana
           end
 
           return lang_map unless lang_map?(lang_map)
-          if lang_map.key?(I18n.locale)
-            lang_map[I18n.locale]
-          elsif lang_map.key?(:def)
-            lang_map[:def]
-          else
+
+          lang_map_value(lang_map, I18n.locale.to_s) ||
+            lang_map_value(lang_map, I18n.default_locale.to_s) ||
+            lang_map[:def] ||
             lang_map.values
+        end
+
+        def lang_map_value(lang_map, locale)
+          iso_locale = ISO_639.find(locale)
+          return nil unless lang_map.key?(iso_locale.alpha2) || lang_map.key?(iso_locale.alpha3)
+
+          alpha2 = lang_map[iso_locale.alpha2]
+          alpha3 = lang_map[iso_locale.alpha3]
+          if alpha2 && alpha3
+            [alpha2, alpha3].flatten
+          elsif alpha2
+            alpha2
+          else
+            alpha3
           end
         end
 
