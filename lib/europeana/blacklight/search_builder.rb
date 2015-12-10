@@ -149,7 +149,7 @@ module Europeana
         end.uniq.join(',')
 
         api_request_facet_fields.each do |field_name, facet|
-          api_parameters[:"f.#{facet.field}.facet.limit"] = (facet_limit_for(field_name) + 1) if facet_limit_for(field_name)
+          api_parameters[:"f.#{facet.field}.facet.limit"] = facet_limit_for(field_name) if facet_limit_for(field_name)
         end
       end
 
