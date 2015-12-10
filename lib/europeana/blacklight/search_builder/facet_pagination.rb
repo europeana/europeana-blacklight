@@ -27,7 +27,7 @@ module Europeana
 
           # Need to set as f.facet_field.facet.* to make sure we
           # override any field-specific default in the solr request handler.
-          api_parameters[:"f.#{facet}.facet.limit"] = limit + 1
+          api_parameters[:"f.#{facet}.facet.limit"] = limit
           api_parameters[:"f.#{facet}.facet.offset"] = offset
           api_parameters[:rows] = 0
         end
