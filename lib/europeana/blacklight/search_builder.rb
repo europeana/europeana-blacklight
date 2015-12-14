@@ -115,7 +115,7 @@ module Europeana
 
         salient_facets = blacklight_params[:f].select do |k, _v|
           facet = blacklight_config.facet_fields[k]
-          facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
+          facet.present? && facet.query && (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
         end
 
         salient_facets.each_pair do |facet_field, value_list|
@@ -149,7 +149,7 @@ module Europeana
         end.uniq.join(',')
 
         api_request_facet_fields.each do |field_name, facet|
-          api_parameters[:"f.#{facet.field}.facet.limit"] = (facet_limit_for(field_name) + 1) if facet_limit_for(field_name)
+          api_parameters[:"f.#{facet.field}.facet.limit"] = facet_limit_for(field_name) if facet_limit_for(field_name)
         end
       end
 
