@@ -26,7 +26,7 @@ module Europeana
 
         def more_like_this_field_terms(*fields)
           fields.flatten.map do |field|
-            fetch(field, []).compact
+            fetch(field, []).compact[0..9]
           end.flatten
         end
 
