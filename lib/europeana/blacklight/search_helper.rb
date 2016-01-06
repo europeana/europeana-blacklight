@@ -7,7 +7,7 @@ module Europeana
       def previous_and_next_document_params(index, window = 1)
         start = index + 1
         api_params = {}
-Rails.logger.debug("index: #{index}".blue.bold)
+
         if start > 1
           api_params[:start] = start - window # get one before
           api_params[:rows] = 2 * window + 1 # and one after
