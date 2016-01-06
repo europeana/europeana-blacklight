@@ -173,8 +173,17 @@ module Europeana
       ##
       # Europeana API start param counts from 1
       def start(start = nil)
-        super_start = super
-        super_start == self ? super_start : super_start + 1
+        if start
+          params_will_change!
+          @start = start.to_i
+          self
+        else
+          @start ||= (page - 1) * (rows || 10) + 1
+
+          val = @start || 1
+          val = 1 if @start < 1
+          val
+        end
       end
 
       protected
