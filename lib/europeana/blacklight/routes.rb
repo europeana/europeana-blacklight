@@ -1,24 +1,18 @@
 module Europeana
   module Blacklight
     ##
-    # URL routing for Blacklight
-    module Routes
-      extend ActiveSupport::Concern
-
-      included do |klass|
-        klass.default_route_sets -= [:solr_document]
-        unless klass.default_route_sets.include?(:europeana_document)
-          klass.default_route_sets += [:europeana_document]
-        end
+    # URL routing for Europeana records
+    class Routes
+      def initialize(defaults = {})
+        @defaults = defaults
       end
 
-      def europeana_document(primary_resource)
-        add_routes do |options|
-          args = { only: [:show] }
-          args[:constraints] = options[:constraints] if options[:constraints]
+      def call(mapper, options = {})
+        options = @defaults.merge(options)
 
-          post 'record/*id/track', args.merge(to: "#{primary_resource}#track", as: 'track_document')
-          get 'record/*id', args.merge(to: "#{primary_resource}#show", as: 'document')
+        constraints id: %r{[^/]+/[^/]+} do
+          mapper.post 'record/*id/track', action: 'track', as: 'track'
+          mapper.get 'record/*id', action: 'show', as: 'show'
         end
       end
     end

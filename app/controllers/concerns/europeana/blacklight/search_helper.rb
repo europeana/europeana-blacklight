@@ -3,6 +3,9 @@ module Europeana
     ##
     # Local overrides for {Blacklight::SearchHelper}
     module SearchHelper
+      extend ActiveSupport::Concern
+      include ::Blacklight::SearchHelper
+
       # index arg counts from 0; API start param counts from 1
       def previous_and_next_document_params(index, window = 1)
         start = index + 1

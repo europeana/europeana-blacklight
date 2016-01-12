@@ -1,8 +1,8 @@
-RSpec.describe Europeana::Blacklight::ApiRepository do
+RSpec.describe Europeana::Blacklight::Repository do
   let(:blacklight_config) do
     Blacklight::Configuration.new.tap do |config|
       config.connection_config = { europeana_api_key: api_key }
-      config.repository_class = Europeana::Blacklight::ApiRepository
+      config.repository_class = Europeana::Blacklight::Repository
       config.search_builder_class = Europeana::Blacklight::SearchBuilder
       config.response_model = Europeana::Blacklight::Response
       config.document_model = Europeana::Blacklight::Document

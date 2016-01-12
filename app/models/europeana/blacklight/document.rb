@@ -1,4 +1,3 @@
-require 'blacklight'
 require 'active_model'
 require 'iso-639'
 
@@ -7,9 +6,9 @@ module Europeana
     ##
     # A Europeana document
     class Document
-      autoload :LangMaps, 'europeana/blacklight/document/lang_maps'
-      autoload :MoreLikeThis, 'europeana/blacklight/document/more_like_this'
-      autoload :Relations, 'europeana/blacklight/document/relations'
+#       autoload :LangMaps, 'europeana/blacklight/document/lang_maps'
+#       autoload :MoreLikeThis, 'europeana/blacklight/document/more_like_this'
+#       autoload :Relations, 'europeana/blacklight/document/relations'
 
       include ActiveModel::Conversion
       include ::Blacklight::Document
