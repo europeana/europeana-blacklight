@@ -11,10 +11,6 @@ module Europeana
         #{config.root}/app/presenters
         #{config.root}/app/controllers/concerns
       )
-
-#       initializer 'europeana_blacklight.routes' do |_app|
-#         ::Blacklight::Routes.send(:include, Europeana::Blacklight::Routes)
-#       end
     end
   end
 end

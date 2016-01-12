@@ -6,10 +6,6 @@ module Europeana
     ##
     # A Europeana document
     class Document
-#       autoload :LangMaps, 'europeana/blacklight/document/lang_maps'
-#       autoload :MoreLikeThis, 'europeana/blacklight/document/more_like_this'
-#       autoload :Relations, 'europeana/blacklight/document/relations'
-
       include ActiveModel::Conversion
       include ::Blacklight::Document
       include ::Blacklight::Document::ActiveModelShim
