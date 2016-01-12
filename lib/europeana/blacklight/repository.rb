@@ -4,7 +4,7 @@ module Europeana
     # Repository hooked up to Europeana REST API via europeana-api gem
     #
     # @see Europeana::API
-    class ApiRepository < ::Blacklight::AbstractRepository
+    class Repository < ::Blacklight::AbstractRepository
       ##
       # Finds a single Europeana record via the API
       #

@@ -7,16 +7,13 @@ module Europeana
       include Europeana::Blacklight::SearchHelper
 
       included do
-        self.search_params_logic = Europeana::Blacklight::SearchBuilder.default_processor_chain
-
         configure_blacklight do |config|
           # Adapter classes
-          config.repository_class = Europeana::Blacklight::ApiRepository
+          config.repository_class = Europeana::Blacklight::Repository
           config.search_builder_class = Europeana::Blacklight::SearchBuilder
           config.response_model = Europeana::Blacklight::Response
           config.document_model = Europeana::Blacklight::Document
           config.document_presenter_class = Europeana::Blacklight::DocumentPresenter
-          # config.facet_paginator_class = Europeana::Blacklight::FacetPaginator
 
           # Prevent BL's "did you mean" spellcheck feature kicking in
           config.spell_max = -1
@@ -28,7 +25,7 @@ module Europeana
         super || params.key?(:q) || params.key?(:mlt)
       end
 
-      def search_results(user_params, _search_params_logic)
+      def search_results(user_params)
         super.tap do |results|
           if has_search_parameters?
             results.first[:facet_queries] = europeana_api_query_facet_counts(user_params)

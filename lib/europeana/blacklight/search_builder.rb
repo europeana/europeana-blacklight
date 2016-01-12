@@ -8,7 +8,6 @@ module Europeana
       require 'europeana/blacklight/search_builder/overlay_params'
       require 'europeana/blacklight/search_builder/ranges'
 
-      attr_accessor :default_processor_chain
       self.default_processor_chain = [
         :default_api_parameters, :add_profile_to_api,
         :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
@@ -47,11 +46,8 @@ module Europeana
       #
       # @see http://labs.europeana.eu/api/search/#profile-parameter
       def add_profile_to_api(api_parameters)
-        if blacklight_config.facet_fields
-          api_parameters[:profile] = 'params facets rich'
-        else
-          api_parameters[:profile] = 'params rich'
-        end
+        api_parameters[:profile] = 'params rich'
+        api_parameters[:profile] << ' facets' if blacklight_config.facet_fields
       end
 
       ##
