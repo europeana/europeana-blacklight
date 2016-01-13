@@ -99,13 +99,14 @@ module Europeana
         salient_facets.each_pair do |facet_field, value_list|
           Array(value_list).reject(&:blank?).each do |value|
             api_parameters[:qf] ||= []
-            if Europeana::API::Search::Fields::MEDIA.include?(facet_field)
-              api_parameters[:qf] << "#{facet_field}:#{value}"
-            else
-              api_parameters[:qf] << "#{facet_field}:\"#{value}\""
-            end
+            api_parameters[:qf] << "#{facet_field}:" + quote_facet_value(facet_field, value)
           end
         end
+      end
+
+      def quote_facet_value(facet_field, value)
+        return value if Europeana::API::Search::Fields::MEDIA.include?(facet_field)
+        '"' + value.gsub('"', '\"') + '"'
       end
 
       ##
@@ -173,8 +174,17 @@ module Europeana
       ##
       # Europeana API start param counts from 1
       def start(start = nil)
-        super_start = super
-        super_start == self ? super_start : super_start + 1
+        if start
+          params_will_change!
+          @start = start.to_i
+          self
+        else
+          @start ||= (page - 1) * (rows || 10) + 1
+
+          val = @start || 1
+          val = 1 if @start < 1
+          val
+        end
       end
 
       protected

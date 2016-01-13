@@ -3,14 +3,16 @@ module Europeana
     ##
     # Local overrides for {Blacklight::SearchHelper}
     module SearchHelper
+      # index arg counts from 0; API start param counts from 1
       def previous_and_next_document_params(index, window = 1)
+        start = index + 1
         api_params = {}
 
-        if index > 1
-          api_params[:start] = index - window # get one before
+        if start > 1
+          api_params[:start] = start - window # get one before
           api_params[:rows] = 2 * window + 1 # and one after
         else
-          api_params[:start] = 1 # there is no previous doc
+          api_params[:start] = start # there is no previous doc
           api_params[:rows] = 2 * window # but there should be one after
         end
 
