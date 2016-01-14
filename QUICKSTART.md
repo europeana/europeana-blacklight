@@ -19,11 +19,6 @@ Add to the Gemfile:
 gem 'europeana-blacklight', '~> 0.3'
 ```
 
-And install:
-```
-bundle install
-```
-
 ## Get a Europeana API key 
 From http://labs.europeana.eu/api/
 
