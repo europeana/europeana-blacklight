@@ -4,7 +4,7 @@
 ```
 gem install rails
 rails -v
-# Rails 4.2.4
+# Rails 4.2.5
 ```
 
 ## Create a new Rails application
@@ -16,9 +16,7 @@ cd culture_vulture
 ## Bundle europeana-blacklight
 Add to the Gemfile:
 ```ruby
-gem 'europeana-blacklight',
-  github: 'europeana/europeana-blacklight',
-  require: 'europeana/blacklight'
+gem 'europeana-blacklight', '~> 0.3'
 ```
 
 ## Get a Europeana API key 

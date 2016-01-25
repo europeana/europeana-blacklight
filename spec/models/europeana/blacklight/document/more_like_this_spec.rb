@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 RSpec.describe Europeana::Blacklight::Document::MoreLikeThis do
   subject { Europeana::Blacklight::Document.new(source) }
   let(:source) { {} }
