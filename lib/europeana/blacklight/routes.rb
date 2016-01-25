@@ -7,9 +7,7 @@ module Europeana
         @defaults = defaults
       end
 
-      def call(mapper, options = {})
-        options = @defaults.merge(options)
-
+      def call(mapper, _options = {})
         constraints id: %r{[^/]+/[^/]+} do
           mapper.post 'record/*id/track', action: 'track', as: 'track'
           mapper.get 'record/*id', action: 'show', as: 'show'
