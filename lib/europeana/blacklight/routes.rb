@@ -8,7 +8,7 @@ module Europeana
       end
 
       def call(mapper, _options = {})
-        constraints id: %r{[^/]+/[^/]+} do
+        mapper.constraints id: %r{[^/]+/[^/]+} do
           mapper.post 'record/*id/track', action: 'track', as: 'track'
           mapper.get 'record/*id', action: 'show', as: 'show'
         end
