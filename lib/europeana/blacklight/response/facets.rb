@@ -49,6 +49,10 @@ module Europeana
             @options[:offset] || default_offset
           end
 
+          # Expected by {Blacklight::Facet#facet_paginator}
+          def prefix
+          end
+
           def sort
             # Europeana API does not support facet sorting
             nil
