@@ -16,7 +16,7 @@ cd culture_vulture
 ## Bundle europeana-blacklight
 Add to the Gemfile:
 ```ruby
-gem 'europeana-blacklight', '~> 0.3'
+gem 'europeana-blacklight', '~> 0.3', '< 0.4'
 ```
 
 ## Get a Europeana API key 
