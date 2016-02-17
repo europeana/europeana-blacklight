@@ -146,7 +146,8 @@ module Europeana
         end.uniq.join(',')
 
         api_request_facet_fields.each do |field_name, facet|
-          api_parameters[:"f.#{facet.field}.facet.limit"] = facet_limit_for(field_name) if facet_limit_for(field_name)
+          limit = facet_limit_with_pagination(field_name)
+          api_parameters[:"f.#{facet.field}.facet.limit"] = limit unless limit.nil?
         end
       end
 
@@ -185,20 +186,27 @@ module Europeana
 
       protected
 
-      # Look up facet limit for given facet_field. Will look at config, and
-      # if config is 'true' will look up from Solr @response if available. If
-      # no limit is avaialble, returns nil. Used from #add_facetting_to_solr
-      # to supply f.fieldname.facet.limit values in solr request (no @response
-      # available), and used in display (with @response available) to create
-      # a facet paginator with the right limit.
+      # Look up facet limit for given facet_field.
+      # @see Blacklight::Solr::SearchBuilderBehavior#facet_limit_for
       def facet_limit_for(facet_field)
         facet = blacklight_config.facet_fields[facet_field]
-        return if facet.blank? || !facet.limit
+        return if facet.blank?
 
-        if facet.limit == true
-          blacklight_config.default_facet_limit
+        if facet.limit
+          facet.limit == true ? blacklight_config.default_facet_limit : facet.limit
+        end
+      end
+
+      # @see Blacklight::Solr::SearchBuilderBehavior#facet_limit_with_pagination
+      def facet_limit_with_pagination(field_name)
+        limit = facet_limit_for(field_name)
+
+        return if limit.nil?
+
+        if limit > 0
+          limit + 1
         else
-          facet.limit
+          limit
         end
       end
 
