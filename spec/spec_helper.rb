@@ -25,11 +25,11 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    stub_request(:get, %r{http://www.europeana.eu/api/v2/record/[^/]+/[^/.]+\.json}).
+    stub_request(:get, %r{https://www.europeana.eu/api/v2/record/[^/]+/[^/.]+\.json}).
       with(query: hash_including(:wskey)).
       to_return(body: '{"success":true}', headers: { 'content-type' => 'application/json' })
 
-    stub_request(:get, 'http://www.europeana.eu/api/v2/search.json').
+    stub_request(:get, 'https://www.europeana.eu/api/v2/search.json').
       with(query: hash_including(:wskey, :query)).
       to_return(body: '{"success":true}', headers: { 'content-type' => 'application/json' })
   end

@@ -16,7 +16,7 @@ cd culture_vulture
 ## Bundle europeana-blacklight
 Add to the Gemfile:
 ```ruby
-gem 'europeana-blacklight', '~> 0.3'
+gem 'europeana-blacklight', '~> 0.3', '< 0.4'
 ```
 
 ## Get a Europeana API key 
@@ -26,6 +26,7 @@ From http://labs.europeana.eu/api/
 ```
 bundle install
 bundle exec rails generate blacklight:install --devise
+# This will ask if you want to overwrite some files; just say yes in a new app.
 bundle exec rails generate europeana:blacklight:install YOUR_API_KEY
 bundle exec rake db:migrate
 ```
