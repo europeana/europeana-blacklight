@@ -43,18 +43,27 @@ module Europeana
           end
 
           def lang_map_value(lang_map, locale)
-            iso_locale = ISO_639.find(locale)
-            return nil unless lang_map.key?(iso_locale.alpha2) || lang_map.key?(iso_locale.alpha3)
+            keys = salient_lang_map_keys(lang_map, locale)
+            return nil unless keys.present?
+            keys.map { |k| lang_map[k] }.flatten.uniq
+          end
 
-            alpha2 = lang_map[iso_locale.alpha2]
-            alpha3 = lang_map[iso_locale.alpha3]
-            if alpha2 && alpha3
-              [alpha2, alpha3].flatten
-            elsif alpha2
-              alpha2
-            else
-              alpha3
-            end
+          protected
+
+          def salient_lang_map_keys(lang_map, locale)
+            iso_code = locale.split('-').first
+            iso_locale = ISO_639.find(iso_code)
+
+            # Favour exact matches
+            keys = lang_map.keys.select do |k|
+              [locale, iso_locale.alpha2, iso_locale.alpha3].include?(k)
+            end.flatten.compact
+            return keys unless keys.blank?
+
+            # Any sub-code will do
+            lang_map.keys.select do |k|
+              k =~ %r{\A#{iso_code}-}
+            end.flatten.compact
           end
         end
 
