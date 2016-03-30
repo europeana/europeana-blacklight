@@ -205,8 +205,7 @@ module Europeana
       def api_request_facet_fields
         @api_request_facet_fields ||= blacklight_config.facet_fields.select do |field_name, facet|
           !facet.query &&
-          (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request)) &&
-          (field_name == 'REUSABILITY' || Europeana::API::Search::Fields.include?(field_name))
+          (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
         end
       end
 
