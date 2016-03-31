@@ -51,11 +51,11 @@ RSpec.describe Europeana::Blacklight::Document do
     it { is_expected.to eq('Document') }
   end
 
-  describe '.lang_map?' do
+  describe '#lang_map?' do
     context 'when not a Hash' do
       it 'returns false' do
         [nil, 0, 1, 'xyz', Array].each do |arg|
-          expect(described_class.lang_map?(arg)).to eq(false)
+          expect(subject.lang_map?(arg)).to eq(false)
         end
       end
     end
@@ -63,19 +63,16 @@ RSpec.describe Europeana::Blacklight::Document do
     context 'when a Hash' do
       context 'when full EDM' do
         it 'returns false' do
-          expect(described_class.lang_map?(edm)).to eq(false)
+          expect(subject.lang_map?(edm)).to eq(false)
         end
       end
       context 'when a record relation' do
         it 'returns false' do
-          expect(described_class.lang_map?(edm[:proxies].first)).to eq(false)
+          expect(subject.lang_map?(edm[:proxies].first)).to eq(false)
         end
       end
     end
   end
-
-  it { is_expected.to delegate_method(:lang_map?).to(:class) }
-  it { is_expected.to delegate_method(:localize_lang_map).to(:class) }
 
   describe '#provider_id' do
     it 'returns first part of ID' do
