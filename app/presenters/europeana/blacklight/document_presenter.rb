@@ -29,7 +29,7 @@ module Europeana
       end
 
       def get_field_values(field, field_config, options = {})
-        Document.localize_lang_map(super)
+        @document.localize_lang_map(super)
       end
     end
   end
