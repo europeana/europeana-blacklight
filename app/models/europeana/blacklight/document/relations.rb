@@ -24,9 +24,9 @@ module Europeana
           relation_keys.each do |k|
             if source_doc.key?(k)
               if source_doc[k].is_a?(Hash)
-                relations[k] = self.class.new(source_doc[k], nil)
+                relations[k] = self.class.new(source_doc[k], nil, self)
               elsif source_doc[k].is_a?(Array)
-                relations[k] = source_doc[k].map { |v| self.class.new(v, nil) }
+                relations[k] = source_doc[k].map { |v| self.class.new(v, nil, self) }
               else
                 fail StandardError,
                      'Relations should be a collection of objects.'
