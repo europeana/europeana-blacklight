@@ -23,7 +23,7 @@ module Europeana
           key = key.dup.downcase
           DEPRECATED_ISO_LANG_CODES.include?(key) ||
             NON_ISO_LANG_CODES.include?(key) ||
-            (!ISO_639.find(key.split('-').first).nil?)
+            !ISO_639.find(key.split('-').first).nil?
         end
 
         def localize_lang_map(lang_map)
@@ -54,7 +54,7 @@ module Europeana
 
           return value unless value.is_a?(String)
 
-          concept = root.fetch('concepts', []).find { |c| c[:about] == value }
+          concept = root.fetch('concepts', []).detect { |c| c[:about] == value }
           if concept.present? && concept.key?(:prefLabel)
             localize_lang_map(concept[:prefLabel])
           else
