@@ -13,6 +13,7 @@ module Europeana
       include MoreLikeThis
       include Relations
 
+      attr_reader :root
       attr_writer :provider_id, :record_id
 
       class << self
@@ -23,8 +24,9 @@ module Europeana
         end
       end
 
-      def initialize(source_doc = {}, response = nil)
+      def initialize(source_doc = {}, response = nil, root = self)
         fields, @relations = extract_relations(source_doc)
+        @root = root
         super(fields, response)
       end
 
@@ -41,7 +43,7 @@ module Europeana
         else
           super
         end
-        Document.localize_lang_map(value)
+        localize_lang_map(value)
       end
 
       def respond_to?(*args)
