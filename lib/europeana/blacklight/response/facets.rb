@@ -96,6 +96,12 @@ module Europeana
               FacetItem.new(value: value['label'], hits: value['count'])
             end
 
+            if blacklight_config && blacklight_config.facet_fields[facet_field_name]
+              if blacklight_config.facet_fields[facet_field_name].group.present?
+                items = grouped_facet_field_items(facet_field_name, items)
+              end
+            end
+
             hash[facet_field_name] = FacetField.new(facet_field_name, items, facet_field_aggregation_options(facet_field_name))
 
             if blacklight_config && !blacklight_config.facet_fields[facet_field_name]
@@ -105,6 +111,21 @@ module Europeana
               end
             end
           end
+        end
+
+        def grouped_facet_field_items(facet_field_name, items)
+          groups = {}
+
+          items.each do |item|
+            item_group = blacklight_config.facet_fields[facet_field_name].group.call(item)
+            if groups.key?(item_group)
+              groups[item_group].hits += item.hits
+            else
+              groups[item_group] = FacetItem.new(item_group, item.hits)
+            end
+          end
+
+          groups.values.sort_by { |item| -item.hits }
         end
 
         def facet_field_aggregation_options(name)
