@@ -102,6 +102,7 @@ module Europeana
 
       def quote_facet_value(facet_field, value)
         return value if Europeana::API::Search::Fields::MEDIA.include?(facet_field)
+        return value if value.include?('*')
         '"' + value.gsub('"', '\"') + '"'
       end
 
