@@ -88,15 +88,19 @@ module Europeana
       def add_facet_qf_to_api(api_parameters)
         return unless blacklight_params[:f]
 
-        salient_facets = blacklight_params[:f].select do |k, _v|
-          !STANDALONE_FACETS.include?(k) && api_request_facet_fields.keys.include?(k)
-        end
+        salient_facets = salient_facets_for_api_facet_qf
 
         salient_facets.each_pair do |facet_field, value_list|
           Array(value_list).reject(&:blank?).each do |value|
             api_parameters[:qf] ||= []
             api_parameters[:qf] << "#{facet_field}:" + quote_facet_value(facet_field, value)
           end
+        end
+      end
+
+      def salient_facets_for_api_facet_qf
+        blacklight_params[:f].select do |k, _v|
+          !STANDALONE_FACETS.include?(k) && api_request_facet_fields.keys.include?(k)
         end
       end
 
@@ -142,9 +146,7 @@ module Europeana
       # @see http://labs.europeana.eu/api/search/#individual-facets
       # @see http://labs.europeana.eu/api/search/#offset-and-limit-of-facets
       def add_facetting_to_api(api_parameters)
-        api_parameters[:facet] = api_request_facet_fields.keys.map do |field|
-          Europeana::API::Search::Fields::MEDIA.include?(field) ? 'DEFAULT' : field
-        end.uniq.join(',')
+        api_parameters[:facet] = api_request_facet_fields.keys.uniq.join(',')
 
         api_request_facet_fields.each do |field_name, facet|
           api_parameters[:"f.#{facet.field}.facet.limit"] = facet_limit_for(field_name) if facet_limit_for(field_name)
