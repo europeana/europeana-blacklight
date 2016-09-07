@@ -8,5 +8,5 @@ group :test do
 end
 
 group :test, :develop do
-  gem 'rubocop', require: false
+  gem 'rubocop', '0.39.0', require: false # only update when Hound does
 end

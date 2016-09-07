@@ -88,10 +88,8 @@ module Europeana
       def add_facet_qf_to_api(api_parameters)
         return unless blacklight_params[:f]
 
-        salient_facets = salient_facets_for_api_facet_qf
-
-        salient_facets.each_pair do |facet_field, value_list|
-          Array(value_list).reject(&:blank?).each do |value|
+        salient_facets_for_api_facet_qf.each_pair do |facet_field, values|
+          [values].flatten.compact.each do |value|
             api_parameters[:qf] ||= []
             api_parameters[:qf] << "#{facet_field}:" + quote_facet_value(facet_field, value)
           end
@@ -207,8 +205,17 @@ module Europeana
 
       def api_request_facet_fields
         @api_request_facet_fields ||= blacklight_config.facet_fields.select do |field_name, facet|
-          !facet.query &&
-            (facet.include_in_request || (facet.include_in_request.nil? && blacklight_config.add_facet_fields_to_solr_request))
+          requestable_facet?(facet)
+        end
+      end
+
+      def requestable_facet?(facet)
+        if facet.query
+          false
+        elsif facet.include_in_request == false
+          false
+        else
+          blacklight_config.add_facet_fields_to_solr_request
         end
       end
 
