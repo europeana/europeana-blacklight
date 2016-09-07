@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = 'Europeana REST API adapter for Blacklight'
   spec.homepage      = 'https://github.com/europeana/europeana-blacklight'
-  spec.license       = 'EUPL 1.1'
+  spec.license       = 'EUPL-1.1'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
