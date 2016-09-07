@@ -88,8 +88,8 @@ module Europeana
       def add_facet_qf_to_api(api_parameters)
         return unless blacklight_params[:f]
 
-        salient_facets_for_api_facet_qf.each_pair do |facet_field, value_list|
-          Array(value_list).reject(&:blank?).each do |value|
+        salient_facets_for_api_facet_qf.each_pair do |facet_field, values|
+          [values].flatten.compact.each do |value|
             api_parameters[:qf] ||= []
             api_parameters[:qf] << "#{facet_field}:" + quote_facet_value(facet_field, value)
           end
@@ -213,8 +213,6 @@ module Europeana
         case
         when facet.query
           false
-        when facet.include_in_request.blank?
-          true
         when facet.include_in_request == false
           false
         else
