@@ -210,10 +210,9 @@ module Europeana
       end
 
       def requestable_facet?(facet)
-        case
-        when facet.query
+        if facet.query
           false
-        when facet.include_in_request == false
+        elsif facet.include_in_request == false
           false
         else
           blacklight_config.add_facet_fields_to_solr_request
