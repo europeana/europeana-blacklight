@@ -7,6 +7,6 @@ group :test do
   gem 'coveralls', require: false
 end
 
-group :test, :develop do
+group :test, :development do
   gem 'rubocop', '0.39.0', require: false # only update when Hound does
 end
