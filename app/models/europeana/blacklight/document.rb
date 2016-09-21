@@ -78,6 +78,13 @@ module Europeana
         @record_id ||= id.to_s.split('/')[2]
       end
 
+      ##
+      # This document's position in a set of search results, if applicable
+      def rank
+        return nil unless response.present? & response.key?('items')
+        response.documents.find_index { |doc| doc == self } + response.start + 1
+      end
+
       def as_json(options = {})
         super.tap do |json|
           relations.each do |k, v|
