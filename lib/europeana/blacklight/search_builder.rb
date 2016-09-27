@@ -12,7 +12,7 @@ module Europeana
         :default_api_parameters, :add_profile_to_api,
         :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
         :add_standalone_facets_to_api, :add_facetting_to_api, :add_paging_to_api,
-        :add_sorting_to_api
+        :add_sorting_to_api, :add_api_url_to_api
       ]
 
       include FacetPagination
@@ -20,7 +20,7 @@ module Europeana
       include Ranges
       include OverlayParams
 
-      delegate :to_query, to: :to_hash
+      delegate :to_query, :delete, to: :to_hash
 
       STANDALONE_FACETS = %w(COLOURPALETTE MEDIA REUSABILITY)
 
@@ -166,6 +166,11 @@ module Europeana
       def add_sorting_to_api(_api_parameters)
         return if sort.blank?
         Europeana::API.logger.warn('Europeana REST API does not support sorting')
+      end
+
+      def add_api_url_to_api(api_parameters)
+        return unless blacklight_params[:api_url]
+        api_parameters[:api_url] = blacklight_params[:api_url]
       end
 
       ##
