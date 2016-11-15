@@ -104,8 +104,8 @@ module Europeana
         end
 
         def relation_keys
-          [:agents, :aggregations, :concepts, :europeanaAggregation, :places,
-           :providedCHOs, :proxies, :timespans, :webResources]
+          [:agents, :aggregations, :concepts, :europeanaAggregation, :licenses,
+           :places, :providedCHOs, :proxies, :timespans, :webResources]
          end
       end
     end
