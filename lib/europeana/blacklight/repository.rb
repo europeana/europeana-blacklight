@@ -13,7 +13,7 @@ module Europeana
       # @return (see blacklight_config.response_model)
       def find(id, params = {})
         id = "/#{id}" unless id[0] == '/'
-        res = connection.record(id, params)
+        res = connection.record.fetch(params.merge(id: id))
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -22,7 +22,7 @@ module Europeana
       end
 
       def search(params = {})
-        res = connection.search(params)
+        res = connection.record.search(params.to_h)
 
         blacklight_config.response_model.new(
           res, params, document_model: blacklight_config.document_model,
@@ -42,23 +42,7 @@ module Europeana
 
       def build_connection
         Europeana::API.tap do |api|
-          api.api_key = blacklight_config.connection_config[:europeana_api_key]
-          api.cache_store = cache_store
-          api.cache_expires_in = cache_expires_in
-        end
-      end
-
-      protected
-
-      def cache_store
-        @cache_store ||= begin
-          blacklight_config.europeana_api_cache || ActiveSupport::Cache::NullStore.new
-        end
-      end
-
-      def cache_expires_in
-        @expires_in ||= begin
-          blacklight_config.europeana_api_cache_expires_in || 24.hours
+          api.key = blacklight_config.connection_config[:europeana_api_key]
         end
       end
     end
