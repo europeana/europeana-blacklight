@@ -24,6 +24,10 @@ module Europeana
 
       STANDALONE_FACETS = %w(COLOURPALETTE MEDIA REUSABILITY)
 
+      MEDIA_FACETS = %w(COLOURPALETTE IMAGE_ASPECTRATIO IMAGE_COLOR IMAGE_COLOUR
+                        IMAGE_GRAYSCALE IMAGE_GREYSCALE IMAGE_SIZE MEDIA MIME_TYPE
+                        SOUND_DURATION SOUND_HQ TEXT_FULLTEXT VIDEO_DURATION VIDEO_HD)
+
       ##
       # Start with general defaults from BL config. Need to use custom
       # merge to dup values, to avoid later mutating the original by mistake.
@@ -103,7 +107,7 @@ module Europeana
       end
 
       def quote_facet_value(facet_field, value)
-        return value if Europeana::API::Search::Fields::MEDIA.include?(facet_field)
+        return value if MEDIA_FACETS.include?(facet_field)
         return value if value.include?('*')
         '"' + value.gsub('"', '\"') + '"'
       end

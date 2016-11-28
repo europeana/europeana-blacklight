@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in europeana-blacklight.gemspec
 gemspec
 
+gem 'europeana-api', github: 'europeana/europeana-api-client-ruby', branch: 'develop'
+
 group :test do
   gem 'coveralls', require: false
 end
