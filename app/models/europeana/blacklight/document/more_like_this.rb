@@ -47,7 +47,7 @@ module Europeana
           return nil unless string_terms.present?
 
           or_terms = string_terms.map do |v|
-            '"' + Europeana::API::Search.escape(v) + '"'
+            '"' + Europeana::API.record.escape(v) + '"'
           end.join(' OR ')
           "#{param}: (#{or_terms})^#{boost}"
         end
