@@ -4,7 +4,7 @@ require 'i18n'
 RSpec.describe Europeana::Blacklight::Document do
   subject { described_class.new(edm) }
   before do
-    I18n.available_locales = [:en, :fr, :es]
+    ::I18n.available_locales = %i(en fr es)
   end
 
   let(:edm) do
@@ -165,7 +165,7 @@ RSpec.describe Europeana::Blacklight::Document do
       context 'when hash is lang map' do
         context 'with key for current locale' do
           before do
-            I18n.locale = :en
+            ::I18n.locale = :en
           end
           it 'returns current locale value' do
             expect(subject.fetch('proxies.dcType')).to eq(['Picture'])
@@ -173,8 +173,8 @@ RSpec.describe Europeana::Blacklight::Document do
         end
         context 'with key for default locale' do
           before do
-            I18n.locale = :fr
-            I18n.default_locale = :en
+            ::I18n.locale = :fr
+            ::I18n.default_locale = :en
           end
           it 'returns default locale value' do
             expect(subject.fetch('proxies.dcType')).to eq(['Picture'])
@@ -182,8 +182,8 @@ RSpec.describe Europeana::Blacklight::Document do
         end
         context 'with key "def"' do
           before do
-            I18n.locale = :fr
-            I18n.default_locale = :es
+            ::I18n.locale = :fr
+            ::I18n.default_locale = :es
           end
           it 'returns default locale value' do
             expect(subject.fetch('proxies.dcType')).to eq(['Image'])
@@ -191,7 +191,7 @@ RSpec.describe Europeana::Blacklight::Document do
         end
         context 'without current locale or "def" keys' do
           before do
-            I18n.locale = :es
+            ::I18n.locale = :es
           end
           it 'returns array of all values' do
             expect(subject.fetch('proxies.dcDescription')).to eq(['object desc'])
