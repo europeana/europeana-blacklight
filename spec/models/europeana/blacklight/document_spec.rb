@@ -4,7 +4,7 @@ require 'i18n'
 RSpec.describe Europeana::Blacklight::Document do
   subject { described_class.new(edm) }
   before do
-    ::I18n.available_locales = [:en, :fr, :es]
+    ::I18n.available_locales = %i(en fr es)
   end
 
   let(:edm) do
