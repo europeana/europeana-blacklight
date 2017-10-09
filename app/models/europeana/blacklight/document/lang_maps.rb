@@ -35,7 +35,6 @@ module Europeana
 
           lang_map_value(lang_map, ::I18n.locale.to_s) ||
             lang_map_value(lang_map, ::I18n.default_locale.to_s) ||
-            dereferenced_lang_map_value(lang_map[:def]) ||
             lang_map.values
         end
 

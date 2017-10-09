@@ -185,8 +185,8 @@ RSpec.describe Europeana::Blacklight::Document do
             ::I18n.locale = :fr
             ::I18n.default_locale = :es
           end
-          it 'returns default locale value' do
-            expect(subject.fetch('proxies.dcType')).to eq(['Image'])
+          it 'returns all values' do
+            expect(subject.fetch('proxies.dcType')).to eq(%w(Image Picture))
           end
         end
         context 'without current locale or "def" keys' do

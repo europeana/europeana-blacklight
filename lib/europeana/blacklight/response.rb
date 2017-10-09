@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     ##
@@ -82,7 +84,7 @@ module Europeana
         when Array
           value.each { |v| force_to_utf8(v) }
         when String
-          value.force_encoding('utf-8') if value.respond_to?(:force_encoding)
+          String.new(value).force_encoding('utf-8') if value.respond_to?(:force_encoding)
         end
         value
       end
