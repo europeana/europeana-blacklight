@@ -1,6 +1,6 @@
 # Europeana::Blacklight
 
-[![Build Status](https://travis-ci.org/europeana/europeana-blacklight.svg?branch=master)](https://travis-ci.org/europeana/europeana-blacklight) [![Coverage Status](https://coveralls.io/repos/europeana/europeana-blacklight/badge.svg?branch=master&service=github)](https://coveralls.io/github/europeana/europeana-blacklight?branch=master) [![security](https://hakiri.io/github/europeana/europeana-blacklight/master.svg)](https://hakiri.io/github/europeana/europeana-blacklight/master) [![Dependency Status](https://gemnasium.com/europeana/europeana-blacklight.svg)](https://gemnasium.com/europeana/europeana-blacklight)
+[![Build Status](https://travis-ci.org/europeana/europeana-blacklight.svg?branch=master)](https://travis-ci.org/europeana/europeana-blacklight) [![Security](https://hakiri.io/github/europeana/europeana-blacklight/master.svg)](https://hakiri.io/github/europeana/europeana-blacklight/master) [![Dependency Status](https://gemnasium.com/europeana/europeana-blacklight.svg)](https://gemnasium.com/europeana/europeana-blacklight) [![Maintainability](https://api.codeclimate.com/v1/badges/9ca73f2805dce1de01b6/maintainability)](https://codeclimate.com/github/europeana/europeana-blacklight/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/9ca73f2805dce1de01b6/test_coverage)](https://codeclimate.com/github/europeana/europeana-blacklight/test_coverage)
 
 Ruby gem providing an adapter to use the
 [Europeana REST API](http://labs.europeana.eu/api/introduction/) as a data
