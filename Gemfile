@@ -6,9 +6,9 @@ gemspec
 gem 'europeana-api', github: 'europeana/europeana-api-client-ruby', branch: 'develop'
 
 group :test do
-  gem 'coveralls', require: false
+  gem 'simplecov', require: false
 end
 
 group :test, :development do
-  gem 'rubocop', '0.39.0', require: false # only update when Hound does
+  gem 'rubocop', '~> 0.53', require: false
 end

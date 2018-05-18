@@ -29,8 +29,14 @@ module Europeana
           docs.first.model_name
         end
 
-        def max_pages
-          (defined?(@_max_pages) && @_max_pages) || (1000 / limit_value)
+        def max_pages(val = :none)
+          if val == :none
+            # getter
+            (defined?(@_max_pages) && @_max_pages) || (1000 / limit_value)
+          else
+            # setter
+            @_max_pages = val
+          end
         end
 
         def total_pages
