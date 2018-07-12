@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.3.0'
 
   spec.add_dependency 'blacklight', '~> 6.0.0'
-  spec.add_dependency 'europeana-api', '~> 1.0.0'
+  spec.add_dependency 'europeana-api', '> 1.0', '< 2.0'
   spec.add_dependency 'iso-639', '~> 0.2.5'
   spec.add_dependency 'kaminari', '>= 1.0.0', '< 2'
   spec.add_dependency 'rails', '>= 4.2.2', '< 5'
