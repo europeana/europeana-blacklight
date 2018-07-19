@@ -166,11 +166,8 @@ module Europeana
         api_parameters[:start] = start unless start == 0
       end
 
-      ##
-      # @todo Implement when the API supports sorting
-      def add_sorting_to_api(_api_parameters)
-        return if sort.blank?
-        Europeana::API.logger.warn('Europeana REST API does not support sorting')
+      def add_sorting_to_api(api_parameters)
+        api_parameters[:sort] = sort
       end
 
       def add_api_url_to_api(api_parameters)
