@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class Response
@@ -37,7 +39,8 @@ module Europeana
           attr_reader :name, :items
 
           def initialize(name, items, options = {})
-            @name, @items = name, items
+            @name = name
+            @items = items
             @options = options
           end
 
@@ -50,8 +53,7 @@ module Europeana
           end
 
           # Expected by {Blacklight::Facet#facet_paginator}
-          def prefix
-          end
+          def prefix; end
 
           def sort
             # Europeana API does not support facet sorting
@@ -92,7 +94,7 @@ module Europeana
           facet_fields.each_with_object({}) do |facet, hash|
             facet_field_name = facet['name']
 
-            items = facet['fields'].collect do |value|
+            items = facet['fields'].map do |value|
               FacetItem.new(value: value['label'], hits: value['count'])
             end
 
@@ -104,11 +106,10 @@ module Europeana
 
             hash[facet_field_name] = FacetField.new(facet_field_name, items, facet_field_aggregation_options(facet_field_name))
 
-            if blacklight_config && !blacklight_config.facet_fields[facet_field_name]
-              # alias all the possible blacklight config names..
-              blacklight_config.facet_fields.select { |_k, v| v.field == facet_field_name }.each do |key, _|
-                hash[key] = hash[facet_field_name]
-              end
+            next unless blacklight_config && !blacklight_config.facet_fields[facet_field_name]
+            # alias all the possible blacklight config names..
+            blacklight_config.facet_fields.select { |_k, v| v.field == facet_field_name }.each do |key, _|
+              hash[key] = hash[facet_field_name]
             end
           end
         end

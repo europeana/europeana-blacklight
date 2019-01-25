@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class Document
@@ -6,12 +8,12 @@ module Europeana
       # @see http://labs.europeana.eu/api/getting-started#datatypes
       module LangMaps
         # @see https://www.loc.gov/standards/iso639-2/php/code_changes.php
-        DEPRECATED_ISO_LANG_CODES = %w(in iw jaw ji jw mo mol scc scr sh)
+        DEPRECATED_ISO_LANG_CODES = %w(in iw jaw ji jw mo mol scc scr sh).freeze
 
         # Special keys API may return in a LangMap, not ISO codes
         # @todo Empty key acceptance is a workaround for malformed API data
         #   output; remove when fixed at source
-        NON_ISO_LANG_CODES = ['def', '']
+        NON_ISO_LANG_CODES = ['def', ''].freeze
 
         # @todo Are three-letter language codes valid in EDM?
         def lang_map?(obj)
@@ -75,7 +77,7 @@ module Europeana
 
           # Any sub-code will do
           lang_map.keys.select do |k|
-            k =~ %r{\A#{iso_code}-}
+            k =~ /\A#{iso_code}-/
           end.flatten.compact
         end
       end

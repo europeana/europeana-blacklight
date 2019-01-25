@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Europeana::Blacklight::Document::MoreLikeThis do
   subject { Europeana::Blacklight::Document.new(source) }
   let(:source) { {} }

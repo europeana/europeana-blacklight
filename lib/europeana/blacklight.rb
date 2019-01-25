@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'blacklight'
 require 'europeana/api'
 require 'europeana/blacklight/engine'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/core_ext/hash'
 
 module Europeana
@@ -11,7 +13,7 @@ module Europeana
         def fetch_through_relation(key, *default)
           field = nested_field_key(key)
           container = nested_field_container(key)
-          value = [container].flatten.compact.collect do |target|
+          value = [container].flatten.compact.map do |target|
             target.fetch(field, *default)
           end.compact.flatten
         end
@@ -52,7 +54,7 @@ module Europeana
             keys = split_edm_key(field)
             field = keys.last
             keys[0..-2].each do |relation_key|
-              container = [container].flatten.collect { |d| d.send(relation_key.to_sym) }
+              container = [container].flatten.map { |d| d.send(relation_key.to_sym) }
             end
           end
           container
@@ -104,8 +106,8 @@ module Europeana
         end
 
         def relation_keys
-          [:agents, :aggregations, :concepts, :europeanaAggregation, :licenses,
-           :places, :providedCHOs, :proxies, :timespans, :webResources]
+          %i(agents aggregations concepts europeanaAggregation licenses
+             places providedCHOs proxies timespans webResources)
          end
       end
     end

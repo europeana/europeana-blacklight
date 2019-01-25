@@ -41,7 +41,7 @@ module Europeana
       end
 
       def documents
-        @documents ||= (self.key?('object') ? [self['object']] : (self['items'] || [])).collect do |doc|
+        @documents ||= (key?('object') ? [self['object']] : (self['items'] || [])).map do |doc|
           document_model.new(doc, self)
         end
       end
