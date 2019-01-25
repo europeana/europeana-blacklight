@@ -17,7 +17,7 @@ module Europeana
       attr_accessor :document_model, :blacklight_config
 
       def initialize(data, request_params, options = {})
-        super(force_to_utf8(data))
+        super(data)
         @request_params = request_params
         self.document_model = options[:document_model] || Document
         self.blacklight_config = options[:blacklight_config]
@@ -41,7 +41,7 @@ module Europeana
       end
 
       def documents
-        @documents ||= (self.key?('object') ? [self['object']] : (self['items'] || [])).collect do |doc|
+        @documents ||= (key?('object') ? [self['object']] : (self['items'] || [])).map do |doc|
           document_model.new(doc, self)
         end
       end
@@ -73,20 +73,6 @@ module Europeana
 
       def empty?
         total == 0
-      end
-
-      private
-
-      def force_to_utf8(value)
-        case value
-        when Hash
-          value.each { |k, v| value[k] = force_to_utf8(v) }
-        when Array
-          value.each { |v| force_to_utf8(v) }
-        when String
-          String.new(value).force_encoding('utf-8') if value.respond_to?(:force_encoding)
-        end
-        value
       end
     end
   end

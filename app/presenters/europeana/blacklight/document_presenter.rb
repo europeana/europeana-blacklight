@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     ##
@@ -19,7 +21,7 @@ module Europeana
 
         field_config = @configuration.send(:"#{context}_fields")[key]
         value = options[:value] || begin
-          [container].flatten.compact.collect do |target|
+          [container].flatten.compact.map do |target|
             presenter = self.class.new(target, @controller, @configuration)
             presenter.get_field_values(key, field_config, options)
           end.compact.flatten

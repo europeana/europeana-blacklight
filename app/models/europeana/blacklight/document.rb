@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_model'
 require 'iso-639'
 
@@ -37,11 +39,11 @@ module Europeana
 
       def fetch(key, *default)
         value = if has_relation?(key)
-          relations[key]
-        elsif field_in_relation?(key)
-          fetch_through_relation(key, *default)
-        else
-          super
+                  relations[key]
+                elsif field_in_relation?(key)
+                  fetch_through_relation(key, *default)
+                else
+                  super
         end
         localize_lang_map(value)
       end

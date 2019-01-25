@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class Install < Rails::Generators::Base
-      source_root File.expand_path('../templates', __FILE__)
+      source_root File.expand_path('templates', __dir__)
 
       argument :europeana_api_key, type: :string
       argument :controller_name, type: :string, default: 'catalog'
