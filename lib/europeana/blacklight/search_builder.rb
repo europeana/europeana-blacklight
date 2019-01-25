@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     ##
@@ -8,12 +10,12 @@ module Europeana
       require 'europeana/blacklight/search_builder/overlay_params'
       require 'europeana/blacklight/search_builder/ranges'
 
-      self.default_processor_chain = [
-        :default_api_parameters, :add_profile_to_api,
-        :add_query_to_api, :add_qf_to_api, :add_facet_qf_to_api, :add_query_facet_to_api,
-        :add_standalone_facets_to_api, :add_facetting_to_api, :add_paging_to_api,
-        :add_sorting_to_api, :add_api_url_to_api
-      ]
+      self.default_processor_chain = %i(
+        default_api_parameters add_profile_to_api
+        add_query_to_api add_qf_to_api add_facet_qf_to_api add_query_facet_to_api
+        add_standalone_facets_to_api add_facetting_to_api add_paging_to_api
+        add_sorting_to_api add_api_url_to_api
+      )
 
       include FacetPagination
       include MoreLikeThis
@@ -36,13 +38,13 @@ module Europeana
       # @todo Rename default_solr_params to default_params upstream
       def default_api_parameters(api_parameters)
         blacklight_config.default_solr_params.each do |key, value|
-          if value.respond_to?(:deep_dup)
-            api_parameters[key] = value.deep_dup
-          elsif value.respond_to?(:dup) && value.duplicable?
-            api_parameters[key] = value.dup
-          else
-            api_parameters[key] = value
-          end
+          api_parameters[key] = if value.respond_to?(:deep_dup)
+                                  value.deep_dup
+                                elsif value.respond_to?(:dup) && value.duplicable?
+                                  value.dup
+                                else
+                                  value
+                                end
         end
       end
 
@@ -52,7 +54,7 @@ module Europeana
       # @see http://labs.europeana.eu/api/search/#profile-parameter
       def add_profile_to_api(api_parameters)
         api_parameters[:profile] = 'params rich'
-        api_parameters[:profile] << ' facets' if blacklight_config.facet_fields
+        api_parameters[:profile] = api_parameters[:profile] + ' facets' if blacklight_config.facet_fields
       end
 
       ##
@@ -211,7 +213,7 @@ module Europeana
       end
 
       def api_request_facet_fields
-        @api_request_facet_fields ||= blacklight_config.facet_fields.select do |field_name, facet|
+        @api_request_facet_fields ||= blacklight_config.facet_fields.select do |_field_name, facet|
           requestable_facet?(facet)
         end
       end
@@ -230,8 +232,8 @@ module Europeana
         return if query.blank?
         return if query == '*:*' && api_parameters[:query].present?
         api_parameters[:query] ||= ''
-        api_parameters[:query] << ' ' unless api_parameters[:query].blank?
-        api_parameters[:query] << query
+        api_parameters[:query] = api_parameters[:query] + ' ' unless api_parameters[:query].blank?
+        api_parameters[:query] = api_parameters[:query] + query
       end
     end
   end

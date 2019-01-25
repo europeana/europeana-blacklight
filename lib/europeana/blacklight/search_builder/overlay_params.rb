@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class SearchBuilder
@@ -23,11 +25,11 @@ module Europeana
           @overlay_params.each do |param_set|
             param_set.each_pair do |k, v|
               k = k.to_sym
-              if api_parameters.key?(k)
-                api_parameters[k] = [api_parameters[k]].flatten # in case it's not an Array
-              else
-                api_parameters[k] = []
-              end
+              api_parameters[k] = if api_parameters.key?(k)
+                                    [api_parameters[k]].flatten # in case it's not an Array
+                                  else
+                                    []
+                                  end
               api_parameters[k] += [v]
               api_parameters[k] = api_parameters[k].flatten.uniq
             end

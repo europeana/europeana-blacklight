@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class Document
@@ -8,9 +10,9 @@ module Europeana
         # @return [String]
         def more_like_this_query(param = nil)
           queries = more_like_this_field_queries(param)
-          return nil unless queries.size > 0
+          return nil if queries.empty?
           field_queries = queries.join(' OR ')
-          "(#{field_queries}) NOT europeana_id:\"#{self.id}\""
+          "(#{field_queries}) NOT europeana_id:\"#{id}\""
         end
 
         protected

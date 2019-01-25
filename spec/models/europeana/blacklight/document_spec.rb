@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'i18n'
 
@@ -11,7 +13,7 @@ RSpec.describe Europeana::Blacklight::Document do
     {
       id: '/abc/123',
       type: 'IMAGE',
-      title: ['title1', 'title2'],
+      title: %w(title1 title2),
       proxies: [
         {
           about: '/proxy/provider/abc/123',
@@ -20,7 +22,7 @@ RSpec.describe Europeana::Blacklight::Document do
             en: ['Picture']
           },
           dcSubject: {
-            def: ['music', 'art']
+            def: %w(music art)
           },
           dcDescription: {
             en: ['object desc']
@@ -136,7 +138,7 @@ RSpec.describe Europeana::Blacklight::Document do
 
     context 'when value is array' do
       it 'returns array of values' do
-        expect(subject['title']).to eq(['title1', 'title2'])
+        expect(subject['title']).to eq(%w(title1 title2))
       end
     end
 
@@ -149,7 +151,7 @@ RSpec.describe Europeana::Blacklight::Document do
       end
     end
   end
-  
+
   describe '#fetch' do
     context 'when key is to relation' do
       it 'handles 2-level keys' do

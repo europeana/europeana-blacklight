@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Europeana
   module Blacklight
     class SearchBuilder
@@ -9,7 +11,7 @@ module Europeana
         included do
           default_processor_chain.unshift :add_mlt_to_api
         end
-        
+
         def add_mlt_to_api(api_parameters)
           return unless blacklight_params[:mlt]
           repository = blacklight_config.repository_class.new(blacklight_config)

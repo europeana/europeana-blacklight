@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Europeana::Blacklight::Document::Relations do
   subject { Europeana::Blacklight::Document.new(source) }
 
@@ -5,8 +7,8 @@ RSpec.describe Europeana::Blacklight::Document::Relations do
     let(:source) { { id: '/abc/123', title: ['test'] } }
 
     it 'returns an empty array' do
-      [:agents, :aggregations, :concepts, :europeanaAggregation, :places,
-       :providedCHOs, :proxies, :timespans].each do |relation|
+      %i(agents aggregations concepts europeanaAggregation places
+         providedCHOs proxies timespans).each do |relation|
         expect(subject.send(relation)).to eq([])
       end
     end
