@@ -77,7 +77,7 @@ module Europeana
 
           # Any sub-code will do
           lang_map.keys.select do |k|
-            k =~ /\A#{iso_code}-/
+            k.start_with?("#{iso_code}-")
           end.flatten.compact
         end
       end
