@@ -10,6 +10,16 @@ module Europeana
       module Relations
         attr_reader :relations
 
+        def self.included(base)
+          base.extend(ClassMethods)
+        end
+
+        module ClassMethods
+          def split_edm_keys
+            @split_edm_keys ||= {}
+          end
+        end
+
         def fetch_through_relation(key, *default)
           field = nested_field_key(key)
           container = nested_field_container(key)
@@ -102,7 +112,7 @@ module Europeana
         protected
 
         def split_edm_key(key)
-          key.to_s.split('.')
+          self.class.split_edm_keys[key] ||= key.to_s.split('.')
         end
 
         def relation_keys
