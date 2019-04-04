@@ -54,3 +54,8 @@ end
 API. If you configure 2 query facets each with 10 facet values, this will result
 in an additional 20 queries being sent to the API.
 
+## License
+
+Licensed under the EUPL v1.2.
+
+For full details, see [LICENSE.md](LICENSE.md).
